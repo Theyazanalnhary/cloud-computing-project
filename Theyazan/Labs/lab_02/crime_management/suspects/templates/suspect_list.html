@@ -1,0 +1,505 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إدارة سجلات الجرائم لدى الشرطة - قائمة المتهمين</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts - Tajawal -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #34495e;
+            --accent-color: #e74c3c;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --success-color: #27ae60;
+            --info-color: #3498db;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: #f5f7fa;
+            color: var(--dark-color);
+        }
+        
+        .main-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+            padding: 30px;
+            margin-top: 20px;
+            margin-bottom: 40px;
+            animation: fadeIn 0.8s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .page-title {
+            color: var(--primary-color);
+            position: relative;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+        
+        .page-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(to right, var(--accent-color), var(--primary-color));
+            border-radius: 2px;
+        }
+        
+        .search-box {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 30px;
+            transition: var(--transition);
+        }
+        
+        .search-box:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.12);
+        }
+        
+        .search-input {
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 12px 15px;
+            transition: var(--transition);
+        }
+        
+        .search-input:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.2);
+        }
+        
+        .search-btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            border-radius: 6px;
+            padding: 12px 25px;
+            transition: var(--transition);
+        }
+        
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(44, 62, 80, 0.3);
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 25px 0;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            animation: fadeInUp 0.8s ease;
+        }
+        
+        .data-table thead {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
+        
+        .data-table th {
+            padding: 15px;
+            text-align: right;
+            font-weight: 600;
+        }
+        
+        .data-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: var(--transition);
+        }
+        
+        .data-table tr:not(:last-child) td {
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .data-table tbody tr:hover td {
+            background-color: rgba(52, 152, 219, 0.05);
+            transform: translateX(5px);
+        }
+        
+        .action-btn {
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 5px;
+        }
+        
+        .action-btn i {
+            margin-left: 8px;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+        
+        .btn-edit {
+            background-color: var(--info-color);
+            border-color: var(--info-color);
+        }
+        
+        .btn-delete {
+            background-color: var(--danger-color);
+            border-color: var(--danger-color);
+        }
+        
+        .badge-count {
+            background-color: var(--accent-color);
+            color: white;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .section-title {
+            color: var(--primary-color);
+            margin: 30px 0 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+            font-weight: 600;
+            position: relative;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            right: 0;
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(to right, var(--accent-color), var(--primary-color));
+        }
+        
+        .empty-message {
+            text-align: center;
+            padding: 30px;
+            color: #6c757d;
+            font-size: 18px;
+        }
+        
+        .empty-message i {
+            font-size: 40px;
+            margin-bottom: 15px;
+            color: #e0e0e0;
+        }
+        
+        /* تأثيرات خاصة للجدول */
+        .table-row-animation {
+            animation: slideInRight 0.5s ease forwards;
+            opacity: 0;
+        }
+        
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        /* تأثيرات للأزرار */
+        .action-btn-group .btn {
+            margin-left: 5px;
+            transition: var(--transition);
+        }
+        
+        .action-btn-group .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        /* تعديلات للاستجابة على الشاشات الصغيرة */
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 15px;
+            }
+            
+            .data-table {
+                font-size: 14px;
+            }
+            
+            .data-table th, .data-table td {
+                padding: 10px 8px;
+            }
+            
+            .action-btn {
+                padding: 6px 10px;
+                font-size: 12px;
+                margin-bottom: 5px;
+            }
+            
+            .action-btn-group {
+                display: flex;
+                flex-direction: column;
+            }
+            
+            .action-btn-group .btn {
+                margin-left: 0;
+                margin-bottom: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container main-container animate__animated animate__fadeIn">
+        <h1 class="page-title">
+            <i class="fas fa-users-cog me-2"></i> نظام إدارة سجلات الجرائم
+        </h1>
+        
+        <!-- نموذج البحث -->
+        <div class="search-box">
+            <form method="GET" class="row g-3 align-items-center">
+                <div class="col-md-10 search-container">
+                    <input type="text" name="q" class="form-control search-input" 
+                           value="{{ query }}" placeholder="ابحث عن اسم المتهم أو رقم الجريمة...">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100 search-btn">
+                        <i class="fas fa-search me-2"></i> بحث
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- عرض قائمة الجرائم -->
+        <h3 class="section-title">
+            <i class="fas fa-gavel me-2"></i> قائمة الجرائم المسجلة
+        </h3>
+        
+        <div class="table-responsive">
+            <table class="table data-table">
+                <thead>
+                    <tr>
+                        <th width="20%">إجراءات</th>
+                        <th>رقم الجريمة</th>
+                        <th>رقم البلاغ</th>
+                        <th>عدد المتهمين</th>
+                        <th>نوع الجريمة</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if crimes %}
+                        {% for crime in crimes %}
+                            <tr class="table-row-animation" >
+                                <td>
+                                    <div class="d-flex action-btn-group">
+                                        <a href="{% url 'suspects:add_suspect' crime_id=crime.id %}" 
+                                           class="btn btn-primary btn-sm action-btn">
+                                            <i class="fas fa-user-plus"></i> إضافة
+                                        </a>
+                                        <a href="{% url 'add_damage' crime_id=crime.id %}" 
+                                           class="btn btn-success btn-sm action-btn">
+                                            <i class="fas fa-arrow-left"></i> التالي
+                                        </a>
+                                    </div>
+                                </td>
+                                <td>{{ crime.id }}</td>
+                                <td>{{ crime.report_number }}</td>
+                                <td>
+                                    <span class="badge-count">{{ crime.suspects.count }}</span>
+                                </td>
+                                <td>{{ crime.crime_type }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="empty-message">
+                                <i class="fas fa-folder-open"></i><br>
+                                لا توجد جرائم مسجلة في النظام
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- عرض قائمة المتهمين -->
+        <h3 class="section-title">
+            <i class="fas fa-user-secret me-2"></i> قائمة المتهمين المسجلين
+        </h3>
+        
+        <div class="table-responsive">
+            <table class="table data-table">
+                <thead>
+                    <tr>
+                        <th>إجراءات</th>
+                        <th>رقم المتهم</th>
+                        <th>الاسم الكامل</th>
+                        <th>نوع الجريمة</th>
+                        <th>الجريمة المرتبطة</th>
+                        <th>الحالة</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if suspects %}
+                        {% for suspect in suspects %}
+                            <tr class="table-row-animation" >
+                                <td>
+                                    <div class="d-flex action-btn-group">
+                                        <a href="{% url 'suspects:edit_suspect' suspect_id=suspect.suspect_id %}" 
+                                           class="btn btn-edit btn-sm action-btn">
+                                            <i class="fas fa-edit"></i> تعديل
+                                        </a>
+                                        <a href="{% url 'suspects:delete_suspect' suspect_id=suspect.suspect_id %}" 
+                                           class="btn btn-delete btn-sm action-btn"
+                                         >
+                                            <i class="fas fa-trash"></i> حذف
+                                        </a>
+                                    </div>
+                                </td>
+                                <td>{{ suspect.suspect_id }}</td>
+                                <td>
+                                    <strong>{{ suspect.full_name }}</strong>
+                                    {% if suspect.nickname %}
+                                        <small class="text-muted">({{ suspect.nickname }})</small>
+                                    {% endif %}
+                                </td>
+                                <td>{{ suspect.crime.crime_type }}</td>
+                                <td>
+                                    <span class="badge bg-secondary">
+                                        {{ suspect.crime.id }} - {{ suspect.crime.report_number }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if suspect.is_fugitive %}
+                                        <span class="badge bg-danger">
+                                            <i class="fas fa-running"></i> هارب
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-check-circle"></i>  مقبوض عليه  
+                                        </span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="6" class="empty-message">
+                                <i class="fas fa-user-slash"></i><br>
+                                لا يوجد متهمين مسجلين في النظام
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            // تأثيرات عند التمرير
+            function animateOnScroll() {
+                $('.table-row-animation').each(function() {
+                    var position = $(this).offset().top;
+                    var scroll = $(window).scrollTop();
+                    var windowHeight = $(window).height();
+                    
+                    if (scroll + windowHeight > position) {
+                        $(this).css('opacity', '1');
+                    }
+                });
+            }
+            
+            // تشغيل التأثيرات عند التحميل وعند التمرير
+            animateOnScroll();
+            $(window).scroll(animateOnScroll);
+            
+            // تأثيرات عند التركيز على حقل البحث
+            $('.search-input').focus(function() {
+                $(this).parent().css('transform', 'scale(1.02)');
+            }).blur(function() {
+                $(this).parent().css('transform', 'scale(1)');
+            });
+            
+            // تأثيرات عند مرور الماوس على الأزرار
+            $('.action-btn').hover(
+                function() {
+                    $(this).css('transform', 'translateY(-3px)');
+                },
+                function() {
+                    $(this).css('transform', 'translateY(0)');
+                }
+            );
+            
+            // تأثيرات عند مرور الماوس على صفوف الجدول
+            $('.data-table tbody tr').hover(
+                function() {
+                    $(this).find('td').css('background-color', 'rgba(52, 152, 219, 0.05)');
+                },
+                function() {
+                    $(this).find('td').css('background-color', '');
+                }
+            );
+            
+        
+        });
+    </script>
+</body>
+</html>
+{% endblock %}

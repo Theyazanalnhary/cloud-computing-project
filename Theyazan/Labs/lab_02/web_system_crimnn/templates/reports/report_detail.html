@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block title %}تفاصيل البلاغ - نظام التبليغ عن الجرائم{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2 class="card-title mb-0">بلاغ #{{ report.reference_number }}</h2>
+                        <span class="badge bg-{{ report.status|yesno:'success,warning,danger' }} fs-6">
+                            {{ report.get_status_display }}
+                        </span>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <p><strong>نوع الجريمة:</strong> {{ report.crime_type }}</p>
+                            <p><strong>الموقع:</strong> {{ report.location }}</p>
+                            {% if report.latitude and report.longitude %}
+                                <div id="map" style="height: 200px;" class="mb-3"></div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>تاريخ البلاغ:</strong> {{ report.created_at|date:"Y/m/d" }}</p>
+                            <p><strong>آخر تحديث:</strong> {{ report.updated_at|date:"Y/m/d" }}</p>
+                            <p><strong>نوع البلاغ:</strong> {{ report.is_anonymous|yesno:"مجهول,معرّف" }}</p>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <h4>تفاصيل البلاغ</h4>
+                        <p class="card-text">{{ report.description|linebreaks }}</p>
+                    </div>
+
+                    {% if report.media.exists %}
+                        <h4>المرفقات</h4>
+                        <div class="row">
+                            {% for media in report.media.all %}
+                                <div class="col-md-4 mb-3">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <a href="{{ media.file.url }}" target="_blank" class="btn btn-outline-primary btn-sm">
+                                                <i class="fas fa-download me-2"></i>
+                                                تحميل المرفق
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">تحديثات الحالة</h4>
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-marker bg-success"></div>
+                            <div class="timeline-content">
+                                <h6>تم استلام البلاغ</h6>
+                                <p class="text-muted">{{ report.created_at|date:"Y/m/d H:i" }}</p>
+                            </div>
+                        </div>
+                        {% if report.status != 'pending' %}
+                            <div class="timeline-item">
+                                <div class="timeline-marker bg-primary"></div>
+                                <div class="timeline-content">
+                                    <h6>قيد التحقيق</h6>
+                                    <p class="text-muted">{{ report.updated_at|date:"Y/m/d H:i" }}</p>
+                                </div>
+                            </div>
+                        {% endif %}
+                        {% if report.status == 'closed' %}
+                            <div class="timeline-item">
+                                <div class="timeline-marker bg-danger"></div>
+                                <div class="timeline-content">
+                                    <h6>تم إغلاق البلاغ</h6>
+                                    <p class="text-muted">{{ report.updated_at|date:"Y/m/d H:i" }}</p>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% if report.latitude and report.longitude %}
+<script>
+function initMap() {
+    const location = { lat: {{ report.latitude }}, lng: {{ report.longitude }} };
+    const map = new google.maps.Map(document.getElementById("map"), {
+        zoom: 15,
+        center: location,
+    });
+    new google.maps.Marker({
+        position: location,
+        map: map,
+    });
+}
+</script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap"></script>
+{% endif %}
+{% endblock %} 

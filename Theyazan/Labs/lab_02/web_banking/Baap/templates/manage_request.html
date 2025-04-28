@@ -1,0 +1,191 @@
+{% load customfilter %}
+<div class="container-fluid">
+    <form action=" " id="request-form">
+        {% csrf_token %}
+        <input type="hidden" name="id" value="{{ brequest.id }}">
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="form-group mb-3 ">
+                    <label for="patient_name" class="control-label">اسم المريض</label>
+                    <input type="text" class="form-control rounded-0" id="patient_name" name="patient_name" value="{{ brequest.patient_name }}" required>
+                </div>
+                <div class="form-group mb-3 ">
+                    <label for="patient_gender" class="control-label">الجنس</label>
+                    <select name="patient_gender" id="patient_gender" class="form-select rounded-0" required="required">
+                        {% if brequest.patient_gender == '1' %}
+                        <option selected>Male</option>
+                        {% else %}
+                        <option>Male</option>
+                        {% endif %}
+                        {% if brequest.patient_gender == '2' %}
+                        <option selected>Female</option>
+                        {% else %}
+                        <option>Female</option>
+                        {% endif %}
+                    </select>
+                </div>
+                <div class="form-group mb-3 ">
+                    <label for="blood_group" class="control-label">فصيلة دم المريض</label>
+                    <select name="blood_group" id="blood_group" class="form-select rounded-0" required="required">
+                        {% if not  brequest.blood_group %}
+                        <option value="" disabled selected>اختار الفصيله من هنا</option>
+                        {% endif %}
+                        {% for bg in blood_groups %}
+                        {% if brequest.blood_group.id == bg.id %}
+                        <option value="{{ bg.id }}" selected>{{ bg }}</option>
+                        {% else %}
+                        <option value="{{ bg.id }}">{{ bg }}</option>
+                        {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group mb-3 ">
+                    <label for="volume" class="control-label">كمية الدم المحتاج</label>
+                    <input type="number" step="any" class="form-control rounded-0 text-end" id="volume" name="volume" value="{{ brequest.volume }}" required>
+                </div>
+                <div class="form-group mb-3 ">
+                    <label for="physician_name" class="control-label">اسم الطبيب</label>
+                    <input type="text" class="form-control rounded-0" id="physician_name" name="physician_name" value="{{ brequest.physician_name }}" required>
+                </div>
+                <div class="form-group mb-3 ">
+                    <label for="status" class="control-label">الحالة</label>
+                    <select name="status" id="status" class="form-select rounded-0" required="required">
+                        {% if brequest.status == '1' %}
+                        <option value="1" selected>Pending</option>
+                        {% else %}
+                        <option value="1">Pending</option>
+                        {% endif %}
+                        {% if brequest.status == '2' %}
+                        <option value="2" selected>Approved</option>
+                        {% else %}
+                        <option value="2">Approved</option>
+                        {% endif %}
+                        {% if brequest.status == '3' %}
+                        <option value="3" selected>Handed-Over</option>
+                        {% else %}
+                        <option value="3">Handed-Over</option>
+                        {% endif %}
+                        {% if brequest.status == '4' %}
+                        <option value="4" selected>Denied</option>
+                        {% else %}
+                        <option value="4">Denied</option>
+                        {% endif %}
+                    </select>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    $(function() {
+        $('#request-form').submit(function(e) {
+            e.preventDefault();
+            var _this = $(this)
+            $('.err-msg').remove();
+            var el = $('<div>')
+            el.addClass("alert alert-danger err-msg text-light")
+            el.hide()
+            if (_this[0].checkValidity() == false) {
+                _this[0].reportValidity();
+                return false;
+            }
+            start_loader();
+            $.ajax({
+                url: "{% url 'save-request' %}",
+                data: new FormData($(this)[0]),
+                cache: false,
+                contentType: false,
+                processData: false,
+                method: 'POST',
+                type: 'POST',
+                dataType: 'json',
+                error: err => {
+                    console.log(err)
+                    alert("An error occured ", 'error');
+                    end_loader();
+                },
+                success: function(resp) {
+                    if (typeof resp == 'object' && resp.status == 'success') {
+                        el.removeClass("alert alert-danger err-msg ")
+                        location.reload()
+                    } else if (resp.status == 'failed' && !!resp.msg) {
+                        el.html(resp.msg)
+                    } else {
+                        el.text("An error occured ", 'error');
+                        end_loader();
+                        console.err(resp)
+                    }
+                    _this.prepend(el)
+                    el.show('slow')
+                    $("html, body, .modal ").scrollTop(0);
+                    end_loader()
+                }
+            })
+        })
+        $('#blood_group').change(function(){
+            start_loader()
+            var _this = $(this)
+            $('#volume').attr('max',0)
+
+            $('.err-msg').remove();
+            $('.available-bg').remove();
+            var el = $('<div>')
+            el.addClass("alert alert-danger err-msg text-light rounded-0 mt-2")
+            el.hide()
+            var el2 = $('<small>')
+                el2.addClass("available-bg text-light mt-1")
+                el2.hide()
+            var form = $('<form>')
+                form.append('<input name="id" value="'+$('#blood_group').val()+'"/>')
+                form.append('{% csrf_token %}')
+            $.ajax({
+                url: "{% url 'get-bg-available' %}",
+                data: new FormData(form[0]),
+                cache: false,
+                contentType: false,
+                processData: false,
+                method: 'POST',
+                type: 'POST',
+                dataType: 'json',
+                error: err => {
+                    console.log(err)
+                    alert("An error occured ", 'error');
+                    end_loader();
+                },
+                success: function(resp) {
+                    if (typeof resp == 'object' && resp.status == 'success') {
+                        resp.volume = parseFloat(resp.volume) * 1000
+                        if('{{ brequest }}' != ''){
+                            if('{{ brequest.blood_group.id }}' ==  _this.val())
+                            resp.volume = parseFloat(resp.volume ) + parseFloat('{{ brequest.volume }}')
+                        }
+                        $('.available-bg').remove();
+                        $('#volume').attr('max',parseFloat(resp.volume))
+                        el2.text("Available: " +(resp.volume) + " ml")
+                        _this.after(el2)
+                        el2.show()
+                    } else if (resp.status == 'failed' && !!resp.msg) {
+                        el.html(resp.msg)
+                        _this.after(el)
+                        el.show('slow')
+                    } else {
+                        el.text("An error occured ", 'error');
+                        end_loader();
+                        console.err(resp)
+                        _this.after(el)
+                        el.show('slow')
+                    }
+                    $("html, body, .modal ").scrollTop(0);
+                    end_loader()
+                }
+            })
+        })
+
+        $('#uni_modal').on('shown.bs.modal', function(){
+            if('{{ brequest.id }}' != ''){
+                $('.available-bg').remove();
+                $('#blood_group').trigger('change')
+            }
+        })
+    })
+</script>

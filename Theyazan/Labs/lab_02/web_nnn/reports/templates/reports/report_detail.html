@@ -1,0 +1,177 @@
+{% extends 'dashboard/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="report-detail">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>{{ report.title }}</h2>
+        <div>
+            <a href="{% url 'reports:update' report.pk %}" class="btn btn-warning">تعديل</a>
+            <a href="{% url 'reports:list' %}" class="btn btn-secondary">عودة للقائمة</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- معلومات التقرير -->
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>تفاصيل البلاغ</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>تاريخ البلاغ:</strong>
+                            <p>{{ report.date_reported|date:"Y-m-d H:i" }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>تاريخ الحادثة:</strong>
+                            <p>{{ report.date_occurred|date:"Y-m-d H:i" }}</p>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <strong>الوصف:</strong>
+                        <p>{{ report.description }}</p>
+                    </div>
+                    <div class="mb-3">
+                        <strong>الموقع:</strong>
+                        <p>{{ report.location }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- الأدلة -->
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5>الأدلة</h5>
+                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addEvidenceModal">
+                        إضافة دليل
+                    </button>
+                </div>
+                <div class="card-body">
+                    {% for evidence in report.evidences.all %}
+                    <div class="evidence-item mb-3 p-3 border rounded">
+                        <h6>{{ evidence.title }}</h6>
+                        <p>{{ evidence.description }}</p>
+                        {% if evidence.file %}
+                        <a href="{{ evidence.file.url }}" class="btn btn-sm btn-info" target="_blank">
+                            عرض الملف
+                        </a>
+                        {% endif %}
+                        <small class="text-muted d-block mt-2">
+                            أضيف بواسطة: {{ evidence.added_by }} - {{ evidence.date_added|date:"Y-m-d H:i" }}
+                        </small>
+                    </div>
+                    {% empty %}
+                    <p class="text-center text-muted">لا توجد أدلة مضافة</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- التحقيقات -->
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5>التحقيقات</h5>
+                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addInvestigationModal">
+                        إضافة تحقيق
+                    </button>
+                </div>
+                <div class="card-body">
+                    {% for investigation in report.investigations.all %}
+                    <div class="investigation-item mb-3 p-3 border rounded">
+                        <p>{{ investigation.notes }}</p>
+                        <small class="text-muted">
+                            بواسطة: {{ investigation.investigator }} - {{ investigation.date_added|date:"Y-m-d H:i" }}
+                        </small>
+                    </div>
+                    {% empty %}
+                    <p class="text-center text-muted">لا توجد تحقيقات مضافة</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- معلومات جانبية -->
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>معلومات المبلغ</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>الاسم:</strong> {{ report.reporter_name }}</p>
+                    <p><strong>الهاتف:</strong> {{ report.reporter_phone }}</p>
+                    <p><strong>البريد الإلكتروني:</strong> {{ report.reporter_email }}</p>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>حالة البلاغ</h5>
+                </div>
+                <div class="card-body">
+                    <p>
+                        <strong>الحالة:</strong>
+                        <span class="badge bg-{{ report.get_status_color }}">
+                            {{ report.get_status_display }}
+                        </span>
+                    </p>
+                    <p>
+                        <strong>الأولوية:</strong>
+                        <span class="badge bg-{{ report.get_priority_color }}">
+                            {{ report.get_priority_display }}
+                        </span>
+                    </p>
+                    <p>
+                        <strong>المسؤول:</strong>
+                        {{ report.assigned_to|default:"غير محدد" }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal إضافة دليل -->
+<div class="modal fade" id="addEvidenceModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">إضافة دليل جديد</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" action="{% url 'reports:add_evidence' report.pk %}" enctype="multipart/form-data">
+                <div class="modal-body">
+                    {% csrf_token %}
+                    {{ evidence_form|crispy }}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="submit" class="btn btn-primary">حفظ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal إضافة تحقيق -->
+<div class="modal fade" id="addInvestigationModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">إضافة تحقيق جديد</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" action="{% url 'reports:add_investigation' report.pk %}">
+                <div class="modal-body">
+                    {% csrf_token %}
+                    {{ investigation_form|crispy }}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="submit" class="btn btn-primary">حفظ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %} 

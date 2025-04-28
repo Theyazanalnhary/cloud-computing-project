@@ -1,0 +1,470 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إدارة سجلات الجرائم لدى الشرطة - قائمة المجني عليهم</title>
+    
+    <!-- Bootstrap RTL CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts - Tajawal -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #4a148c;
+            --secondary-color: #7b1fa2;
+            --accent-color: #e91e63;
+            --dark-color: #1a237e;
+            --light-color: #f8f9fa;
+            --success-color: #2e7d32;
+            --warning-color: #ff8f00;
+            --danger-color: #c62828;
+            --card-bg: #ffffff;
+            --border-radius: 12px;
+            --box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        
+        .main-container {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 30px;
+            margin-top: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .page-title {
+            color: var(--primary-color);
+            position: relative;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+            font-weight: 900;
+        }
+        
+        .page-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(to right, var(--accent-color), var(--primary-color));
+            border-radius: 2px;
+        }
+        
+        .search-box {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+            margin-bottom: 30px;
+            transition: var(--transition);
+        }
+        
+        .search-input {
+            border: 2px solid #e0e0e0;
+            border-radius: var(--border-radius);
+            padding: 12px 15px;
+            transition: var(--transition);
+        }
+        
+        .search-input:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(233, 30, 99, 0.2);
+        }
+        
+        .search-btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 12px 25px;
+            transition: var(--transition);
+        }
+        
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(74, 20, 140, 0.3);
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 25px 0;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--box-shadow);
+        }
+        
+        .data-table thead {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
+        
+        .data-table th {
+            padding: 15px;
+            text-align: right;
+            font-weight: 600;
+        }
+        
+        .data-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: var(--transition);
+        }
+        
+        .data-table tr:not(:last-child) td {
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .data-table tbody tr:hover td {
+            background-color: rgba(74, 20, 140, 0.05);
+        }
+        
+        .action-btn {
+            padding: 8px 15px;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 5px;
+        }
+        
+        .action-btn i {
+            margin-left: 8px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+        }
+        
+        .btn-edit {
+            background-color: rgba(33, 150, 243, 0.1);
+            color: #2196f3;
+        }
+        
+        .btn-edit:hover {
+            background-color: #2196f3;
+            color: white;
+        }
+        
+        .btn-delete {
+            background-color: rgba(244, 67, 54, 0.1);
+            color: #f44336;
+        }
+        
+        .btn-delete:hover {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        .badge-count {
+            background-color: var(--accent-color);
+            color: white;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .badge-damage {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .badge-physical {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+        
+        .badge-financial {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .badge-psychological {
+            background-color: #e3f2fd;
+            color: #1565c0;
+        }
+        
+        .badge-other {
+            background-color: #f3e5f5;
+            color: #6a1b9a;
+        }
+        
+        .section-title {
+            color: var(--primary-color);
+            margin: 30px 0 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+            font-weight: 700;
+            position: relative;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            right: 0;
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(to right, var(--accent-color), var(--primary-color));
+        }
+        
+        .empty-message {
+            text-align: center;
+            padding: 30px;
+            color: #6c757d;
+            font-size: 18px;
+        }
+        
+        .empty-message i {
+            font-size: 40px;
+            margin-bottom: 15px;
+            color: #e0e0e0;
+        }
+        
+        /* تعديلات للاستجابة على الشاشات الصغيرة */
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 15px;
+            }
+            
+            .data-table {
+                font-size: 14px;
+            }
+            
+            .data-table th, .data-table td {
+                padding: 10px 8px;
+            }
+            
+            .action-btn {
+                padding: 6px 10px;
+                font-size: 12px;
+                margin-bottom: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container main-container">
+        <h1 class="page-title">
+            <i class="fas fa-user-injured me-2"></i> نظام إدارة سجلات الجرائم لدى الشرطة - قائمة المجني عليهم
+
+        </h1>
+        
+        <!-- نموذج البحث -->
+        <div class="search-box">
+            <form method="GET" class="row g-3 align-items-center">
+                <div class="col-md-10 search-container">
+                    <input type="text" name="q" class="form-control search-input" 
+                           value="{{ query }}" placeholder="ابحث عن اسم المجني عليه أو رقم الجريمة أو نوع الضرر...">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100 search-btn">
+                        <i class="fas fa-search me-2"></i> بحث
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- عرض قائمة الجرائم -->
+        <h3 class="section-title">
+            <i class="fas fa-gavel me-2"></i> قائمة الجرائم المسجلة
+        </h3>
+        
+        <div class="table-responsive">
+            <table class="table data-table">
+                <thead>
+                    <tr>
+                        <th width="20%">إجراءات</th>
+                        <th>رقم الجريمة</th>
+                        <th>رقم البلاغ</th>
+                        <th>عدد المجني عليهم</th>
+                        <th>نوع الجريمة</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if crimes %}
+                        {% for crime in crimes %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex action-btn-group">
+                                        <a href="{% url 'add_victim_for_crime' crime.id %}" 
+                                           class="btn btn-primary btn-sm action-btn">
+                                            <i class="fas fa-user-plus"></i> إضافة مجني عليه
+                                        </a>
+                                        <a href="#" 
+                                           class="btn btn-success btn-sm action-btn">
+                                            <i class="fas fa-arrow-left"></i> التفاصيل
+                                        </a>
+                                    </div>
+                                </td>
+                                <td>{{ crime.id }}</td>
+                                <td>{{ crime.report_number }}</td>
+                                <td>
+                                    <span class="badge-count">{{ crime.victims.count }}</span>
+                                </td>
+                                <td>{{ crime.crime_type }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="empty-message">
+                                <i class="fas fa-folder-open"></i><br>
+                                لا توجد جرائم مسجلة في النظام
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- عرض قائمة المجني عليهم -->
+        <h3 class="section-title">
+            <i class="fas fa-user-injured me-2"></i> قائمة المجني عليهم
+        </h3>
+        
+        <div class="table-responsive">
+            <table class="table data-table">
+                <thead>
+                    <tr>
+                        <th>إجراءات</th>
+                        <th>رقم المجني عليه</th>
+                        <th>الاسم الكامل</th>
+                        <th>نوع الضرر</th>
+                        <th>الجريمة المرتبطة</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if victims %}
+                        {% for victim in victims %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex action-btn-group">
+                                        <a href="{% url 'edit_victim' victim.victim_id %}" 
+                                           class="btn btn-edit btn-sm action-btn">
+                                            <i class="fas fa-edit"></i> تعديل
+                                        </a>
+                                        <a href="{% url 'delete_victim' victim.victim_id %}" 
+                                           class="btn btn-delete btn-sm action-btn">
+                                            <i class="fas fa-trash"></i> حذف
+                                        </a>
+                                    </div>
+                                </td>
+                                <td>{{ victim.victim_id }}</td>
+                                <td>
+                                    <strong>{{ victim.full_name }}</strong>
+                                    {% if victim.nickname %}
+                                        <small class="text-muted">({{ victim.nickname }})</small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if victim.damage_type == 'male_deaths' %}
+                                        <span class="badge-damage badge-physical">
+                                            <i class="fas fa-bone me-1"></i> بدني
+                                        </span>
+                                    {% elif victim.damage_type == 'مادي' %}
+                                        <span class="badge-damage badge-financial">
+                                            <i class="fas fa-money-bill-wave me-1"></i> مادي
+                                        </span>
+                                    {% elif victim.damage_type == 'psychological' %}
+                                        <span class="badge-damage badge-psychological">
+                                            <i class="fas fa-brain me-1"></i> نفسي
+                                        </span>
+                                    {% else %}
+                                        <span class="badge-damage badge-other">
+                                            <i class="fas fa-question me-1"></i> آخر
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if victim.crime %}
+                                        <span class="badge bg-secondary">
+                                            {{ victim.crime.id }} - {{ victim.crime.report_number }}
+                                        </span>
+                                    {% else %}
+                                        <span class="text-muted">غير مرتبط</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="empty-message">
+                                <i class="fas fa-user-slash"></i><br>
+                                لا يوجد مجني عليهم مسجلين في النظام
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <script>
+        $(document).ready(function() {
+            // تأكيد الحذف مع SweetAlert2
+            function confirmDelete() {
+                return Swal.fire({
+                    title: 'هل أنت متأكد؟',
+                    text: "لن تتمكن من استعادة هذه البيانات!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'نعم، احذف!',
+                    cancelButtonText: 'إلغاء',
+                    customClass: {
+                        popup: 'swal2-arabic',
+                        title: 'swal2-title-arabic',
+                        confirmButton: 'swal2-confirm-arabic',
+                        cancelButton: 'swal2-cancel-arabic'
+                    }
+                }).then((result) => {
+                    return result.isConfirmed;
+                });
+            }
+            
+         
+                
+            
+        });
+    </script>
+</body>
+</html>
+{% endblock %}

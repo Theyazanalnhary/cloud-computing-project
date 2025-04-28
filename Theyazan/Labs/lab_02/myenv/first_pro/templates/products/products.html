@@ -1,0 +1,19 @@
+{% extends 'base.html'%}
+
+
+{% block content %}
+
+{% for x in pro %}
+
+<p>
+    {% if x.image %}
+        <img src="{{ x.image.url }}" alt="">
+    {% else %}
+        <p>No image available</p>
+    {% endif %}
+</p>
+
+
+
+{% endfor %}
+{% endblock content %}

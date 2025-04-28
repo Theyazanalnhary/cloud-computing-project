@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}تم الإرسال بنجاح - نظام التبليغ عن الجرائم{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <div class="card">
+                <div class="card-body">
+                    <i class="fas fa-check-circle text-success fa-5x mb-4"></i>
+                    <h2 class="card-title mb-4">تم إرسال رسالتك بنجاح</h2>
+                    <p class="lead">شكراً لتواصلك معنا. سنقوم بالرد عليك في أقرب وقت ممكن.</p>
+                    <div class="mt-4">
+                        <a href="{% url 'core:home' %}" class="btn btn-primary">العودة للصفحة الرئيسية</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

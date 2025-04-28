@@ -1,0 +1,55 @@
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">H.P.S</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="{% url 'patients:home' %}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'patients:show' %}">Patients</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'patients:create' %}">Add New Patient</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'patients:forms' %}">Forms</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/">Admin Panel</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'Doctor:doctors_home' %}">Doctor Home</a>
+                    </li>
+                    
+                    <!-- Login/Logout Icon -->
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link text-danger" href="{% url 'user:logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link text-success" href="{% url 'user:login' %}"><i class="fas fa-sign-in-alt"></i> Login</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Content -->
+    <div class="container mt-4">
+        {% block content %}
+        <!-- Dynamic content will be loaded here -->
+        {% endblock %}
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>

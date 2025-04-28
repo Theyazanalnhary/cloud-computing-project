@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}قائمة البلاغات - نظام التبليغ عن الجرائم{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-12">
+            <h2 class="text-center mb-4">قائمة البلاغات</h2>
+            
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">العنوان</th>
+                        <th scope="col">الحالة</th>
+                        <th scope="col">التاريخ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for report in reports %}
+                    <tr>
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <td>{{ report.title }}</td>
+                        <td>{{ report.get_status_display }}</td>
+                        <td>{{ report.created_at|date:"Y-m-d" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+your_project/
+├── templates/
+│   ├── base.html
+│   ├── reports/
+│   │   ├── create_report.html
+│   │   ├── report_list.html
+│   │   ├── report_detail.html
+│   │   └── track_report.html
+│   ├── accounts/
+│   │   ├── login.html
+│   │   ├── register.html
+│   │   └── profile.html
+
+├── templates/
+    ├── accounts/
+└── manage.py

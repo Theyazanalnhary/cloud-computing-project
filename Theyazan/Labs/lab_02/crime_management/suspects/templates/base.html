@@ -1,0 +1,717 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}نظام إدارة الجرائم{% endblock %}</title>
+
+    <!-- الخطوط -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- الأيقونات -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            /* نظام ألوان متكامل ومبهر */
+            --primary-dark: #0a3d62;
+            --primary-main: #1e88e5;
+            --primary-light: #64b5f6;
+            --primary-lighter: #bbdefb;
+            --primary-lightest: #e3f2fd;
+            
+            --secondary-dark: #b71c1c;
+            --secondary-main: #f44336;
+            --secondary-light: #e57373;
+            
+            --accent-gold: #ffd700;
+            --accent-silver: #c0c0c0;
+            
+            --text-dark: #1a237e;
+            --text-light: #e8eaf6;
+            
+            --header-height: 80px;
+            --sidebar-width: 280px;
+            --sidebar-collapsed-width: 85px;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #f5f9ff;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            padding-top: var(--header-height);
+        }
+
+        /* الشريط العلوي المميز */
+        .top-header {
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: 0;
+            height: var(--header-height);
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary-main));
+            color: white;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            z-index: 1030;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid var(--accent-gold);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--accent-gold);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+
+        .system-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin: 0;
+            color: white;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 5px;
+            border-radius: 5px;
+        }
+
+        .menu-toggle:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: scale(1.1);
+        }
+
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 5px 15px;
+            border-radius: 30px;
+            background-color: rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .user-section:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-light), var(--accent-gold));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-dark);
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .user-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: white;
+            margin: 0;
+        }
+
+        .user-role {
+            font-size: 0.8rem;
+            color: var(--accent-gold);
+            margin: 0;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .header-btn {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            font-size: 1.2rem;
+        }
+
+        .header-btn:hover {
+            background-color: var(--primary-light);
+            transform: translateY(-2px);
+        }
+
+        .header-btn .badge {
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            background-color: var(--secondary-main);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        /* القائمة الجانبية الفاخرة */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--primary-dark), var(--primary-main));
+            color: white;
+            height: calc(100vh - var(--header-height));
+            position: fixed;
+            top: var(--header-height);
+            right: 0;
+            padding: 1.5rem 0;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+            z-index: 1020;
+            transition: all 0.3s ease;
+            border-left: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .sidebar-header {
+            padding: 0 1.5rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0;
+            color: var(--accent-gold);
+        }
+
+        .sidebar-toggle {
+            background: none;
+            border: none;
+            color: var(--accent-gold);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-toggle:hover {
+            transform: rotate(90deg);
+        }
+
+        .sidebar-nav {
+            padding: 0 1rem;
+            height: calc(100% - 140px);
+            overflow-y: auto;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.9rem 1.5rem;
+            margin-bottom: 0.5rem;
+            border-radius: 8px;
+            color: var(--primary-lightest);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 3px;
+            height: 100%;
+            background-color: var(--accent-gold);
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            transform: translateX(-5px);
+        }
+
+        .nav-link:hover::before {
+            transform: translateX(0);
+        }
+
+        .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.15);
+            color: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-link.active::before {
+            transform: translateX(0);
+        }
+
+        .nav-link i {
+            margin-left: 15px;
+            font-size: 1.2rem;
+            color: var(--accent-gold);
+            transition: all 0.3s ease;
+            min-width: 25px;
+            text-align: center;
+        }
+
+        .nav-link.active i,
+        .nav-link:hover i {
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .nav-link span {
+            font-weight: 500;
+            flex-grow: 1;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover span {
+            font-weight: 600;
+        }
+
+        .nav-link .chevron {
+            opacity: 0;
+            font-size: 0.9rem;
+            color: var(--accent-gold);
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover .chevron {
+            opacity: 1;
+            transform: translateX(-5px);
+        }
+
+        .sidebar-footer {
+            padding: 1.5rem;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: rgba(0, 0, 0, 0.1);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logout-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--secondary-main), var(--secondary-dark));
+            border: none;
+            padding: 0.7rem;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 2px 10px rgba(244, 67, 54, 0.3);
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(244, 67, 54, 0.4);
+        }
+
+        /* المحتوى الرئيسي */
+        .main-content {
+            margin-right: var(--sidebar-width);
+            margin-top: var(--header-height);
+            min-height: calc(100vh - var(--header-height));
+            padding: 2rem;
+            transition: all 0.3s ease;
+            background-color: #f5f9ff;
+        }
+
+        /* تأثيرات للقائمة المغلقة */
+        .sidebar.collapsed {
+            width: var(--sidebar-collapsed-width);
+        }
+
+        .sidebar.collapsed .sidebar-title,
+        .sidebar.collapsed .nav-link span,
+        .sidebar.collapsed .nav-link .chevron,
+        .sidebar.collapsed .logout-btn span {
+            display: none;
+        }
+
+        .sidebar.collapsed .nav-link {
+            justify-content: center;
+            padding: 1rem 0;
+        }
+
+        .sidebar.collapsed .nav-link i {
+            margin-left: 0;
+            font-size: 1.3rem;
+        }
+
+        .sidebar.collapsed .logout-btn {
+            justify-content: center;
+            padding: 0.7rem 0;
+        }
+
+        /* تلميحات الأدوات للقائمة المغلقة */
+        .sidebar-tooltip {
+            position: absolute;
+            left: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary-main));
+            color: white;
+            padding: 0.7rem 1.2rem;
+            border-radius: 8px;
+            box-shadow: 3px 3px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1050;
+            white-space: nowrap;
+            font-size: 0.9rem;
+            font-weight: 500;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            border-left: 3px solid var(--accent-gold);
+        }
+
+        /* تأثيرات للشاشات الصغيرة */
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(100%);
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-right: 0;
+            }
+            
+            .menu-toggle {
+                display: flex;
+            }
+            
+            .user-name {
+                display: none;
+            }
+            
+            .user-section {
+                padding: 5px;
+            }
+        }
+
+        /* شريط التمرير المخصص */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: var(--accent-gold);
+            border-radius: 3px;
+        }
+        
+        /* تأثيرات إضافية */
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 215, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
+        }
+        
+        .pulse-effect {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- الشريط العلوي الفاخر -->
+        <header class="top-header">
+            <div class="header-content">
+                <div class="header-left">
+                    <!-- زر القائمة والشعار -->
+                    
+                    
+                    <div class="logo-container">
+                        <img src="{% static 'assets/images/noti system.png' %}" alt="شعار النظام" class="logo-img pulse-effect">
+                        <h1 class="system-name">نظام إدارة الجرائم</h1>
+                    </div>
+                </div>
+                
+                <div class="header-right">
+                    <!-- زر الإشعارات وتسجيل الخروج -->
+                    <div class="header-actions">
+                        <button class="header-btn" title="الإشعارات">
+                            <i class="fas fa-bell"></i>
+                            <span class="badge">3</span>
+                        </button>
+                        
+                        <form method="post" action="{% url 'logout' %}" class="mb-0">
+                            {% csrf_token %}
+                            <button type="submit" class="header-btn" title="تسجيل الخروج">
+                                <i class="fas fa-sign-out-alt"></i>
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <!-- معلومات المستخدم -->
+                    <div class="user-section">
+                        <div class="user-avatar">
+                            {{ request.user.first_name|first|default:"U" }}{{ request.user.last_name|first|default:"S" }}
+                        </div>
+                        <div class="user-details">
+                            <p class="user-name">{{ request.user.username|default:request.user.username }}</p>
+                            <p class="user-role">{{ role |default:"مستخدم" }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+        </header>
+
+        <!-- القائمة الجانبية المميزة -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2 class="sidebar-title">القائمة الرئيسية</h2>
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+
+            <nav class="sidebar-nav custom-scrollbar">
+                <a href="{% url 'index' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+                    <i class="fas fa-home"></i>
+                    <span>الرئيسية</span>
+                    <i class="fas fa-chevron-left chevron"></i>
+                </a>
+                
+                <a href="{% url 'crime_list' %}" class="nav-link {% if request.resolver_match.url_name == 'crimes_list' %}active{% endif %}">
+                    <i class="fas fa-file-alt"></i>
+                    <span>الجرائم</span>
+                    <i class="fas fa-chevron-left chevron"></i>
+                </a>
+                
+                <a href="{% url 'suspects:suspect_list' %}" class="nav-link">
+                    <i class="fas fa-user-secret"></i>
+                    <span>المتهمون</span>
+                    <i class="fas fa-chevron-left chevron"></i>
+                </a>
+                
+                <a href="{% url 'victim_list' %}" class="nav-link {% if request.resolver_match.url_name == 'victims_list' %}active{% endif %}">
+                    <i class="fas fa-user-check"></i>
+                    <span>المجني عليهم</span>
+                    <i class="fas fa-chevron-left chevron"></i>
+                </a>
+                
+                <a href="{% url 'damage_list' %}" class="nav-link {% if request.resolver_match.url_name == 'officers_list' %}active{% endif %}">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                    <span>الضرر</span>
+                    <i class="fas fa-chevron-left chevron"></i>
+                </a>
+                
+                <a href="{% url 'investigation_list' %}" class="nav-link {% if request.resolver_match.url_name == 'officers_list' %}active{% endif %}">
+                    <i class="fas fa-search"></i>
+                    <span>إجراءات التحري</span>
+                    <i class="fas fa-chevron-left chevron"></i>
+                </a>
+                
+                <a href="{% url 'prosecution_list' %}" class="nav-link {% if request.resolver_match.url_name == 'officers_list' %}active{% endif %}">
+                    <i class="fas fa-gavel"></i>
+                    <span>إجراءات المحكمة</span>
+                    <i class="fas fa-chevron-left chevron"></i>
+                </a>
+                
+                <a href="#" class="nav-link {% if request.resolver_match.url_name == 'reports_list' %}active{% endif %}">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>التقارير</span>
+                    <i class="fas fa-chevron-left chevron"></i>
+                </a>
+                
+                <a href="{% url 'suspects:search_suspects' %}" class="nav-link {% if request.resolver_match.url_name == 'settings' %}active{% endif %}">
+                    <i class="fas fa-search"></i>
+                    <span>البحث عن المتهمين</span>
+                    <i class="fas fa-chevron-left chevron"></i>
+                </a>
+                
+             
+
+                 <!-- زر عرض الضباط (يظهر فقط للمدير) -->
+        {% if role == "مدير" %}
+        <a href="{% url 'officer_list' %}" class="nav-link d-flex align-items-center {% if request.resolver_match.url_name == 'officer_list' %}active{% endif %}">
+            <i class="fas fa-id-card me-2"></i>
+            <span>عرض الضباط</span>
+        </a>
+        {% endif %}
+
+        <a href="#" class="nav-link {% if request.resolver_match.url_name == 'settings' %}active{% endif %}">
+            <i class="fas fa-cog"></i>
+            <span>الإعدادات</span>
+            <i class="fas fa-chevron-left chevron"></i>
+        </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>تسجيل الخروج</span>
+                    </button>
+                </form>
+            </div>
+        </aside>
+
+        <!-- المحتوى الرئيسي -->
+        <main class="main-content">
+            <div class="content-body">
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // تبديل القائمة الجانبية
+            const menuToggle = document.getElementById('menuToggle');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebar = document.querySelector('.sidebar');
+            
+            // زر القائمة الجانبية (للأجهزة الصغيرة)
+            menuToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('active');
+            });
+            
+            // زر طي/فتح القائمة الجانبية
+            sidebarToggle.addEventListener('click', function(e) {
+                e.stopPropagation(); // منع انتشار الحدث
+                sidebar.classList.toggle('collapsed');
+                localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+                
+                // تغيير أيقونة الزر
+                const icon = sidebarToggle.querySelector('i');
+                if (sidebar.classList.contains('collapsed')) {
+                    icon.classList.remove('fa-chevron-right');
+                    icon.classList.add('fa-chevron-left');
+                } else {
+                    icon.classList.remove('fa-chevron-left');
+                    icon.classList.add('fa-chevron-right');
+                }
+            });
+            
+            // التحقق من حالة القائمة في localStorage
+            if (localStorage.getItem('sidebarCollapsed') === 'true') {
+                sidebar.classList.add('collapsed');
+                const icon = sidebarToggle.querySelector('i');
+                icon.classList.remove('fa-chevron-right');
+                icon.classList.add('fa-chevron-left');
+            }
+            
+            // إضافة تلميحات الأدوات للقائمة المغلقة
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('mouseenter', function() {
+                    if (sidebar.classList.contains('collapsed')) {
+                        const tooltip = document.createElement('div');
+                        tooltip.className = 'sidebar-tooltip';
+                        tooltip.textContent = this.querySelector('span').textContent;
+                        this.appendChild(tooltip);
+                        
+                        setTimeout(() => {
+                            tooltip.style.opacity = '1';
+                        }, 100);
+                        
+                        this.addEventListener('mouseleave', function() {
+                            tooltip.remove();
+                        }, { once: true });
+                    }
+                });
+            });
+            
+            // إغلاق القائمة الجانبية عند النقر خارجها (للأجهزة الصغيرة)
+            document.addEventListener('click', function(e) {
+                if (!sidebar.contains(e.target) && e.target !== menuToggle) {
+                    sidebar.classList.remove('active');
+                }
+            });
+            
+            // تأثير التقلص للشريط العلوي عند التمرير
+            const header = document.querySelector('.top-header');
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 20) {
+                    header.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.2)';
+                    header.style.height = '70px';
+                } else {
+                    header.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.15)';
+                    header.style.height = '80px';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

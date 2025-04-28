@@ -1,0 +1,44 @@
+{% extends 'base.html'%}
+{% block content%}
+<h1 class="border border-primary m-5 p-5">Update</h1>
+<div class="m-5 border-primary">
+   <form method="post" action="{% url 'patients:edit' patient.id %}" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="col-md-4">
+        <label for="validationCustom01" class="form-label">First name</label>
+        <input type="text" id="validationCustom01" required name="fname" value="{{patient.first_name}}" class="form-control">
+         <div class="valid-feedack">]
+            looks good !
+         </div>
+    </div>
+    <div class="col-md-4">
+        <label for="validationCustom02" class="form-label">Last name</label>
+        <input type="text" class="form-control" id="validationCustom02" required name="lname" value="{{patient.last_name}}">
+        <div class="valid-feedack">
+            Looks good!
+        </div>
+
+    </div>
+    <div class="col-md-3">
+        <label for="validationCustom05" class="form-label">Age</label>
+        <input type="number" class="form-control" required name="age" value="{{patient.age}}" id="validationCustom05">
+        
+    </div>
+
+    <div class="input-group">
+        <span class="input-group">width textarea</span>
+        <textarea class="form-control" aria-label="width textarea"  id="" name="report" >{{patient.report}}</textarea>
+    </div>
+     <div class="col-md-3">
+        <label for="formFile" class="form-label">medicak report</label>
+        <input type="file" class="form-control" id="formImage" name="medicakreport" value="{{patient.file}}">
+
+     </div>
+     <div class="col-md-3">
+        <label for="formFile" class="form-label">Patient image </label>
+        <input type="file" id="formImage" name="image" value="{{patient.image}}">
+     </div>
+     <button type="submit" class=" btn border-primary m-2">Submit</button>
+   </form>
+</div>
+{% endblock%}

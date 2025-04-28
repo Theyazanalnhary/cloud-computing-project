@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}اتصل بنا - نظام التبليغ عن الجرائم{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title mb-4">اتصل بنا</h2>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        
+                        <button type="submit" class="btn btn-primary">إرسال الرسالة</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">معلومات الاتصال</h4>
+                    <hr>
+                    <div class="mb-4">
+                        <h5><i class="fas fa-phone me-2"></i>الهاتف</h5>
+                        <p class="text-muted">+966 XX XXX XXXX</p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h5><i class="fas fa-envelope me-2"></i>البريد الإلكتروني</h5>
+                        <p class="text-muted">support@example.com</p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h5><i class="fas fa-clock me-2"></i>ساعات العمل</h5>
+                        <p class="text-muted">24/7</p>
+                    </div>
+                    
+                    <div>
+                        <h5><i class="fas fa-map-marker-alt me-2"></i>العنوان</h5>
+                        <p class="text-muted">المملكة العربية السعودية</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

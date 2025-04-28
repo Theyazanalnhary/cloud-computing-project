@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>حذف إجراء تحري</h2>
+    <p>هل أنت متأكد من أنك تريد حذف الإجراء رقم: <strong>{{ investigation.investigation_id }}</strong>؟</p>
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">نعم، حذف</button>
+    </form>
+    <a href="{% url 'investigation_list' %}" class="btn btn-secondary mt-2">إلغاء</a>
+{% endblock %}

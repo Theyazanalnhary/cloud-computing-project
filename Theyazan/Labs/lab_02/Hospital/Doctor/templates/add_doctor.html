@@ -1,0 +1,10 @@
+<!-- add_doctor.html -->
+{% extends 'base.html' %}
+{% block content %}
+<h1>Add New Doctor</h1>
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+{% endblock %}

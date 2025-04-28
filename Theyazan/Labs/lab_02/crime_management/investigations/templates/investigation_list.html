@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h2 class="text-center mb-4">قائمة إجراءات التحري</h2>
+
+        <!-- شريط البحث -->
+        <div class="mb-4">
+            <form method="GET" class="d-flex">
+                <input type="text" name="q" class="form-control me-2" value="{{ query }}" placeholder="ابحث برقم الإجراء">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-search me-2"></i>بحث
+                </button>
+            </form>
+        </div>
+
+        <!-- زر إضافة جديد -->
+        <div class="mb-4 text-end">
+            <a href="{% url 'add_investigation' %}" class="btn btn-success">
+                <i class="fas fa-plus me-2"></i>إضافة إجراء جديد
+            </a>
+        </div>
+
+        <!-- جدول عرض بيانات إجراءات التحري -->
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>رقم الإجراء</th>
+                        <th>الجريمة</th>
+                        <th>المتهم</th>
+                        <th>وضعية الجاني</th>
+                        <th>إجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for investigation in investigations %}
+                        <tr>
+                            <td>{{ investigation.investigation_id }}</td>
+                            <td>{{ investigation.crime }}</td>
+                            <td>{{ investigation.suspect }}</td>
+                            <td>{{ investigation.status }}</td>
+                            <td>
+                                <a href="{% url 'edit_investigation' investigation.investigation_id %}" class="btn btn-warning btn-sm me-2">
+                                    <i class="fas fa-edit me-1"></i>تعديل
+                                </a>
+                                <a href="{% url 'delete_investigation' investigation.investigation_id %}" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-trash me-1"></i>حذف
+                                </a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center">لا توجد إجراءات مسجلة</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

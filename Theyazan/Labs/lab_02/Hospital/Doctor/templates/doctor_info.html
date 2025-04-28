@@ -1,0 +1,34 @@
+{% include 'layout/header.html' %}
+<div class="card mb-3 border border-primary m-5 p-5" style="max-width: 540px;">
+    <div class="row g-0">
+        <div class="col-md-4">
+            {% if doctor.image %}
+            <img src="{{ doctor.image.url }}" class="img-fluid rounded-start" alt="Doctor Image">
+            {% else %}
+            <img src="/static/default-doctor-image.jpg" class="img-fluid rounded-start" alt="Default Image">
+            {% endif %}
+        </div>
+        <div class="col-md-8">
+            <div class="card-body">
+                <h5 class="card-title">{{ doctor.id }} - {{ doctor.name }}</h5>
+                <p class="card-text"><strong>Specialty:</strong> {{ doctor.specialty }}</p>
+                <p class="card-text"><strong>Email:</strong> {{ doctor.email }}</p>
+                <p class="card-text"><strong>Phone:</strong> {{ doctor.phone }}</p>
+                <p class="card-text"><small class="text-muted">Uploaded at: {{ doctor.uploaded_at }}</small></p>
+
+                <p class="card-text">
+                    <small class="text-muted">
+                        <button type="submit" class="btn btn-primary">
+                            <a href="{% url 'Doctor:doctor_edit' doctor.id %}" class="text-decoration-none text-white">Update</a>
+                        </button>
+                        <button type="button" class="btn btn-danger">
+                            <a href="{% url 'Doctor:doctor_delete' doctor.id %}" class="text-decoration-none text-white">
+                                Delete
+                            </a>
+                        </button>
+                    </small>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

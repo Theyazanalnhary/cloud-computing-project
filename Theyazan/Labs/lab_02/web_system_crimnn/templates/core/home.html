@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}الصفحة الرئيسية - نظام التبليغ عن الجرائم{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-8 mx-auto text-center">
+            <h1 class="display-4 mb-4">نظام التبليغ عن الجرائم</h1>
+            <p class="lead mb-5">منصة آمنة وموثوقة للإبلاغ عن الجرائم والمخالفات</p>
+            
+            <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'reports:report_create' %}" class="btn btn-primary btn-lg px-4">
+                        <i class="fas fa-plus-circle me-2"></i>
+                        تقديم بلاغ جديد
+                    </a>
+                    <a href="{% url 'reports:report_list' %}" class="btn btn-outline-secondary btn-lg px-4">
+                        <i class="fas fa-list me-2"></i>
+                        عرض بلاغاتي
+                    </a>
+                {% else %}
+                    <a href="{% url 'accounts:login' %}" class="btn btn-primary btn-lg px-4">
+                        <i class="fas fa-sign-in-alt me-2"></i>
+                        تسجيل الدخول
+                    </a>
+                    <a href="{% url 'accounts:register' %}" class="btn btn-outline-secondary btn-lg px-4">
+                        <i class="fas fa-user-plus me-2"></i>
+                        إنشاء حساب جديد
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-shield-alt fa-3x text-primary mb-3"></i>
+                    <h3 class="card-title">آمن وموثوق</h3>
+                    <p class="card-text">نضمن سرية وأمان معلوماتك الشخصية وتفاصيل البلاغات</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-clock fa-3x text-primary mb-3"></i>
+                    <h3 class="card-title">متابعة فورية</h3>
+                    <p class="card-text">نتابع بلاغك على مدار الساعة ونوافيك بآخر المستجدات</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i class="fas fa-mobile-alt fa-3x text-primary mb-3"></i>
+                    <h3 class="card-title">سهل الاستخدام</h3>
+                    <p class="card-text">واجهة سهلة الاستخدام تمكنك من تقديم البلاغات بكل يسر</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

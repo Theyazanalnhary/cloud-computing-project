@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}تحديث حالة البلاغ - نظام التبليغ عن الجرائم{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title text-center mb-4">تحديث حالة البلاغ #{{ object.reference_number }}</h2>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <p><strong>نوع الجريمة:</strong> {{ object.crime_type }}</p>
+                            <p><strong>الموقع:</strong> {{ object.location }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>تاريخ البلاغ:</strong> {{ object.created_at|date:"Y/m/d" }}</p>
+                            <p><strong>آخر تحديث:</strong> {{ object.updated_at|date:"Y/m/d" }}</p>
+                        </div>
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'dashboard:dashboard' %}" class="btn btn-secondary">عودة</a>
+                            <button type="submit" class="btn btn-primary">تحديث الحالة</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

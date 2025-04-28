@@ -1,0 +1,407 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة المجني عليهم - الجريمة {{ crime.report_number }}</title>
+    
+    <!-- Bootstrap RTL CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts - Tajawal -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #6a11cb;
+            --secondary-color: #2575fc;
+            --accent-color: #ff4d4d;
+            --dark-color: #2c3e50;
+            --light-color: #f8f9fa;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --card-bg: #ffffff;
+            --border-radius: 12px;
+            --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            color: var(--dark-color);
+            min-height: 100vh;
+        }
+        
+        .crime-container {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 30px;
+            margin-top: 30px;
+            margin-bottom: 50px;
+            animation: fadeIn 0.8s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .page-title {
+            color: var(--primary-color);
+            position: relative;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+            font-weight: 900;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .page-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(to right, var(--accent-color), var(--primary-color));
+            border-radius: 2px;
+        }
+        
+        .action-buttons {
+            margin-bottom: 30px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 10px 25px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(106, 17, 203, 0.3);
+            transition: var(--transition);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(106, 17, 203, 0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, var(--success-color), #27ae60);
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 10px 25px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+            transition: var(--transition);
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(46, 204, 113, 0.4);
+        }
+        
+        .table-container {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+            animation: fadeInUp 0.8s ease;
+        }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .table {
+            margin-bottom: 0;
+        }
+        
+        .table thead {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
+        
+        .table th {
+            padding: 15px;
+            font-weight: 600;
+            text-align: right;
+            border-bottom: none;
+        }
+        
+        .table td {
+            padding: 12px 15px;
+            vertical-align: middle;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .table-hover tbody tr:hover {
+            background-color: rgba(106, 17, 203, 0.03);
+            transform: scale(1.01);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .table-hover tbody tr {
+            transition: var(--transition);
+        }
+        
+        .btn-action {
+            padding: 8px 15px;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 5px;
+        }
+        
+        .btn-action i {
+            margin-left: 5px;
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning-color), #e67e22);
+            color: white;
+            border: none;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger-color), #c0392b);
+            color: white;
+            border: none;
+        }
+        
+        .btn-warning:hover, .btn-danger:hover {
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .empty-message {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+            font-size: 18px;
+        }
+        
+        .empty-message i {
+            font-size: 50px;
+            margin-bottom: 15px;
+            color: #bdc3c7;
+        }
+        
+        .crime-badge {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        
+        /* تأثيرات خاصة */
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        /* تعديلات للاستجابة على الشاشات الصغيرة */
+        @media (max-width: 768px) {
+            .crime-container {
+                padding: 20px;
+            }
+            
+            .page-title {
+                font-size: 1.5rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .btn-primary, .btn-success {
+                width: 100%;
+            }
+            
+            .table th, .table td {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+            
+            .btn-action {
+                padding: 5px 10px;
+                font-size: 0.8rem;
+                margin-bottom: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container crime-container">
+        <!-- العنوان -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="page-title">
+                <i class="fas fa-user-injured me-2"></i> المجني عليهم للجريمة
+            </h2>
+            <span class="crime-badge pulse-animation">
+                <i class="fas fa-file-alt me-2"></i> رقم البلاغ: {{ crime.report_number }}
+            </span>
+        </div>
+
+        <!-- أزرار الإجراءات -->
+        <div class="d-flex justify-content-between action-buttons">
+            <div>
+                <a href="{% url 'add_victim_for_crime' crime_id=crime.id %}" class="btn btn-primary">
+                    <i class="fas fa-user-plus me-2"></i> إضافة مجني عليه جديد
+                </a>
+            </div>
+            <div>
+                <a href="{% url 'suspects:add_suspect' crime_id=crime.id %}" class="btn btn-success">
+                    التالي <i class="fas fa-arrow-left me-2"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- جدول المجني عليهم -->
+        <div class="table-container">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th width="25%">الإجراءات</th>
+                        <th width="20%">رقم البلاغ</th>
+                        <th width="25%">الاسم الكامل</th>
+                        <th width="15%">العمر</th>
+                        <th width="15%">الجنس</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for victim in victims %}
+                        <tr>
+                            <td>
+                                <div class="d-flex">
+                                    <a href="{% url 'edit_victim' victim.victim_id %}" class="btn btn-warning btn-action">
+                                        <i class="fas fa-edit"></i> تعديل
+                                    </a>
+                                    <a href="{% url 'delete_victim' victim.victim_id %}" class="btn btn-danger btn-action">
+                                        <i class="fas fa-trash"></i> حذف
+                                    </a>
+                                </div>
+                            </td>
+                            <td>{{ crime.report_number }}</td>
+                            <td>
+                                <strong>{{ victim.full_name }}</strong>
+                                {% if victim.nickname %}
+                                    <small class="text-muted d-block">({{ victim.nickname }})</small>
+                                {% endif %}
+                            </td>
+                            <td>{{ victim.age }}</td>
+                            <td>
+                                {% if victim.gender == 'ذكر' %}
+                                    <span class="badge bg-primary rounded-pill">{{ victim.gender }}</span>
+                                {% else %}
+                                    <span class="badge bg-pink rounded-pill">{{ victim.gender }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="5" class="empty-message">
+                                <i class="fas fa-user-slash"></i><br>
+                                لا توجد مجني عليهم مسجلين لهذه الجريمة
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <script>
+        $(document).ready(function() {
+            // تأثيرات عند التمرير
+            function animateOnScroll() {
+                $('.table-container, .crime-badge').each(function() {
+                    var position = $(this).offset().top;
+                    var scroll = $(window).scrollTop();
+                    var windowHeight = $(window).height();
+                    
+                    if (scroll + windowHeight > position) {
+                        $(this).css('opacity', '1');
+                    }
+                });
+            }
+            
+            // تشغيل التأثيرات عند التحميل وعند التمرير
+            animateOnScroll();
+            $(window).scroll(animateOnScroll);
+            
+            // تأكيد الحذف مع SweetAlert2
+            $('.btn-danger').on('click', function(e) {
+                e.preventDefault();
+                const deleteUrl = $(this).attr('href');
+                
+                Swal.fire({
+                    title: 'هل أنت متأكد؟',
+                    text: "لن تتمكن من استعادة بيانات المجني عليه بعد الحذف!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#e74c3c',
+                    cancelButtonColor: '#7f8c8d',
+                    confirmButtonText: 'نعم، احذف',
+                    cancelButtonText: 'إلغاء',
+                    customClass: {
+                        popup: 'swal2-arabic',
+                        title: 'swal2-title-arabic',
+                        confirmButton: 'swal2-confirm-arabic',
+                        cancelButton: 'swal2-cancel-arabic'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = deleteUrl;
+                    }
+                });
+            });
+            
+            // تأثيرات عند مرور الماوس على الأزرار
+            $('.btn-action').hover(
+                function() {
+                    $(this).css('transform', 'translateY(-3px)');
+                },
+                function() {
+                    $(this).css('transform', 'translateY(0)');
+                }
+            );
+        });
+    </script>
+</body>
+</html>
+{% endblock %}

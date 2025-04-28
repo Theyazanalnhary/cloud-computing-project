@@ -1,0 +1,463 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page_title }}</title>
+    
+    <!-- Bootstrap RTL CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts - Tajawal -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #34495e;
+            --accent-color: #e74c3c;
+            --dark-color: #1a252f;
+            --light-color: #f8f9fa;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #c0392b;
+            --card-bg: #ffffff;
+            --input-bg: #f8f9fa;
+            --border-radius: 10px;
+            --box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+            --icon-size: 1.1rem;
+            --icon-bg-size: 40px;
+        }
+        
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+            color: #333;
+            padding: 20px;
+        }
+        
+        .prosecution-form-container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 30px;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .prosecution-form-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+        }
+        
+        .form-header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+        
+        .form-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 50%;
+            transform: translateX(50%);
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+            border-radius: 2px;
+        }
+        
+        .form-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+        
+        .form-subtitle {
+            color: #6c757d;
+            font-size: 1rem;
+        }
+        
+        .form-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+        
+        .form-section {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: rgba(248, 249, 250, 0.5);
+            border-radius: var(--border-radius);
+            border-left: 4px solid var(--primary-color);
+            transition: var(--transition);
+        }
+        
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title i {
+            margin-left: 10px;
+            font-size: var(--icon-size);
+            color: var(--accent-color);
+        }
+        
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--dark-color);
+        }
+        
+        .form-control, .form-select {
+            border-radius: var(--border-radius);
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            background-color: var(--input-bg);
+            transition: var(--transition);
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.15);
+        }
+        
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .btn-submit {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(44, 62, 80, 0.2);
+        }
+        
+        .btn-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(44, 62, 80, 0.3);
+        }
+        
+        .btn-submit i {
+            margin-left: 8px;
+        }
+        
+        .text-danger {
+            color: var(--danger-color);
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+        
+        .is-invalid {
+            border-color: var(--danger-color) !important;
+        }
+        
+        .input-icon {
+            position: relative;
+        }
+        
+        .input-icon i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary-color);
+            background: rgba(44, 62, 80, 0.1);
+            width: var(--icon-bg-size);
+            height: var(--icon-bg-size);
+            line-height: var(--icon-bg-size);
+            text-align: center;
+            border-radius: 50%;
+            font-size: var(--icon-size);
+        }
+        
+        .input-icon .form-control {
+            padding-left: calc(var(--icon-bg-size) + 20px);
+        }
+        
+        @media (max-width: 768px) {
+            .prosecution-form-container {
+                padding: 20px;
+            }
+            
+            .form-title {
+                font-size: 1.5rem;
+            }
+            
+            .form-section {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="prosecution-form-container">
+        <div class="form-header">
+            <div class="form-icon">
+                <i class="fas fa-gavel"></i>
+            </div>
+            <h1 class="form-title">{% trans "إجراءات النيابة والمحكمة" %}</h1>
+            <p class="form-subtitle">{% trans "نموذج إضافة إجراءات النيابة والمحكمة للجريمة" %}</p>
+        </div>
+        
+        <form method="POST" id="prosecutionForm" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <!-- معلومات الجريمة -->
+            <div class="form-section">
+                <h3 class="section-title">
+                    <i class="fas fa-file-alt"></i> {% trans "معلومات الجريمة" %}
+                </h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.crime_report_number.id_for_label }}" class="form-label">
+                                {% trans "رقم البلاغ/الجريمة" %}
+                            </label>
+                            {{ form.crime_report_number }}
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.investigation.id_for_label }}" class="form-label">
+                                {% trans "إجراء التحري" %}
+                            </label>
+                            <div class="input-icon">
+                                <i class="fas fa-search"></i>
+                                {{ form.investigation }}
+                            </div>
+                            <small class="text-danger">{{ form.investigation.errors }}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- معلومات النيابة -->
+            <div class="form-section">
+                <h3 class="section-title">
+                    <i class="fas fa-balance-scale"></i> {% trans "معلومات النيابة" %}
+                </h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.prosecutor_office.id_for_label }}" class="form-label">
+                                {% trans "النيابة المختصة" %}
+                            </label>
+                            <div class="input-icon">
+                                <i class="fas fa-landmark"></i>
+                                {{ form.prosecutor_office }}
+                            </div>
+                            <small class="text-danger">{{ form.prosecutor_office.errors }}</small>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.case_number.id_for_label }}" class="form-label">
+                                {% trans "رقم القضية" %}
+                            </label>
+                            <div class="input-icon">
+                                <i class="fas fa-hashtag"></i>
+                                {{ form.case_number }}
+                            </div>
+                            <small class="text-danger">{{ form.case_number.errors }}</small>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.submission_date.id_for_label }}" class="form-label">
+                                {% trans "تاريخ التقديم للنيابة" %}
+                            </label>
+                            <div class="input-icon">
+                                <i class="fas fa-calendar-day"></i>
+                                {{ form.submission_date }}
+                            </div>
+                            <small class="text-danger">{{ form.submission_date.errors }}</small>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.prosecutor_decisions.id_for_label }}" class="form-label">
+                                {% trans "قرارات النيابة" %}
+                            </label>
+                            {{ form.prosecutor_decisions }}
+                            <small class="text-danger">{{ form.prosecutor_decisions.errors }}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- معلومات المحكمة -->
+            <div class="form-section">
+                <h3 class="section-title">
+                    <i class="fas fa-gavel"></i> {% trans "معلومات المحكمة" %}
+                </h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.referral_to_court_date.id_for_label }}" class="form-label">
+                                {% trans "تاريخ الإحالة للمحكمة" %}
+                            </label>
+                            <div class="input-icon">
+                                <i class="fas fa-calendar-check"></i>
+                                {{ form.referral_to_court_date }}
+                            </div>
+                            <small class="text-danger">{{ form.referral_to_court_date.errors }}</small>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.court_procedures.id_for_label }}" class="form-label">
+                                {% trans "إجراءات المحكمة" %}
+                            </label>
+                            {{ form.court_procedures }}
+                            <small class="text-danger">{{ form.court_procedures.errors }}</small>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.verdict.id_for_label }}" class="form-label">
+                                {% trans "منطوق الحكم" %}
+                            </label>
+                            {{ form.verdict }}
+                            <small class="text-danger">{{ form.verdict.errors }}</small>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.sentence_execution.id_for_label }}" class="form-label">
+                                {% trans "تنفيذ العقوبة" %}
+                            </label>
+                            {{ form.sentence_execution }}
+                            <small class="text-danger">{{ form.sentence_execution.errors }}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-submit">
+                    <i class="fas fa-save"></i> {% trans "حفظ الإجراء" %}
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // معالجة رسائل Django
+        const messages = JSON.parse('{{ messages_json|escapejs }}');
+        messages.forEach(msg => {
+            Swal.fire({
+                position: 'center',
+                icon: msg.tags === 'error' ? 'error' :
+                      msg.tags === 'success' ? 'success' :
+                      msg.tags === 'warning' ? 'warning' : 'info',
+                title: msg.text,
+                showConfirmButton: false,
+                timer: 3000
+            });
+        });
+        
+        // إضافة تأثيرات للحقول عند التركيز
+        const formControls = document.querySelectorAll('.form-control, .form-select');
+        formControls.forEach(control => {
+            control.addEventListener('focus', function() {
+                this.parentElement.querySelector('i')?.classList.add('fa-beat');
+            });
+            
+            control.addEventListener('blur', function() {
+                this.parentElement.querySelector('i')?.classList.remove('fa-beat');
+            });
+        });
+        
+        // التحقق من الصحة قبل الإرسال
+        const form = document.getElementById('prosecutionForm');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                let isValid = true;
+                
+                // التحقق من الحقول المطلوبة
+                const requiredFields = form.querySelectorAll('[required]');
+                requiredFields.forEach(field => {
+                    if (!field.value.trim()) {
+                        field.classList.add('is-invalid');
+                        isValid = false;
+                    }
+                });
+                
+                if (!isValid) {
+                    e.preventDefault();
+                    Swal.fire({
+                        icon: 'error',
+                        title: '{% trans "خطأ في الإدخال" %}',
+                        text: '{% trans "يوجد حقول مطلوبة لم يتم تعبئتها" %}',
+                    });
+                }
+            });
+        }
+        
+        // الانتقال بين الحقول باستخدام Enter
+        const inputs = form.querySelectorAll('input, select, textarea');
+        inputs.forEach((input, index) => {
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (index < inputs.length - 1) {
+                        inputs[index + 1].focus();
+                    }
+                }
+            });
+        });
+    });
+    </script>
+</body>
+</html>
+{% endblock %}

@@ -1,0 +1,422 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>قائمة الضباط</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- خطوط Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <!-- الأنماط الخاصة بالمشروع -->
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #f9fafb, #e5e7eb); /* تدرج لوني لخلفية الصفحة */
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container-fluid {
+            padding-top: 50px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #1e3a8a; /* أزرق داكن */
+            margin-bottom: 30px;
+            font-size: 2rem;
+            font-weight: bold;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1); /* ظل نص خفيف */
+        }
+
+        .btn-add {
+            display: block;
+            width: 100%;
+            max-width: 200px;
+            margin: 0 auto 30px auto;
+            background: linear-gradient(135deg, #1e3a8a, #172c66); /* تدرج لوني للأزرار */
+            border: none;
+            border-radius: 20px; /* زوايا مستديرة أكثر */
+            color: white;
+            font-weight: bold;
+            padding: 10px;
+            text-align: center;
+            text-decoration: none;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .btn-add:hover {
+            transform: scale(1.05); /* تأثير تكبير عند التمرير */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* ظل عند التمرير */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0 auto;
+            background-color: white; /* خلفية بيضاء للجدول */
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* ظل خفيف */
+        }
+
+        th {
+            background: linear-gradient(135deg, #1e3a8a, #172c66); /* تدرج لوني للعناوين */
+            color: white;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        th:hover {
+            transform: scale(1.02); /* تأثير تكبير عند التمرير */
+        }
+
+        th i {
+            margin-left: 5px;
+            font-size: 0.9rem;
+        }
+
+        td, th {
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f3f4f6; /* لون خلفية الصفوف الزوجية */
+        }
+
+        tr:hover {
+            background-color: #e5e7eb; /* لون عند تمرير الماوس */
+        }
+
+        .actions a {
+            margin: 0 5px;
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 15px; /* زوايا مستديرة أكثر */
+            font-weight: bold;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .actions a.edit {
+            background: linear-gradient(135deg, #0d6efd, #0b5ed7); /* تدرج لوني للأزرار */
+            color: white;
+        }
+
+        .actions a.delete {
+            background: linear-gradient(135deg, #dc3545, #b02a37); /* تدرج لوني للأزرار */
+            color: white;
+        }
+
+        .actions a:hover {
+            transform: scale(1.1); /* تأثير تكبير عند التمرير */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* ظل عند التمرير */
+        }
+
+        .search-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .search-container input {
+            width: 300px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 20px; /* زوايا مستديرة أكثر */
+            font-family: 'Cairo', sans-serif;
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .search-container input:focus {
+            border-color: #1e3a8a;
+            outline: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* ظل عند التركيز */
+        }
+
+        .no-data {
+            text-align: center;
+            color: #777;
+            font-size: 1.2rem;
+            margin-top: 20px;
+            font-style: italic;
+        }
+
+        /* رسالة تأكيد الحذف */
+.delete-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.delete-confirm-box {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    background-color: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 5px 30px rgba(0,0,0,0.3);
+    z-index: 1001;
+    width: 350px;
+    max-width: 90%;
+    text-align: center;
+    font-family: 'Cairo', sans-serif;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.delete-header {
+    margin-bottom: 20px;
+}
+
+.delete-header h4 {
+    color: #1e3a8a;
+    margin: 10px 0 0 0;
+    display: inline-block;
+}
+
+.warning-icon {
+    color: #f59e0b;
+    font-size: 2rem;
+    vertical-align: middle;
+    margin-left: 10px;
+}
+
+.delete-message {
+    margin-bottom: 25px;
+    font-size: 1.1rem;
+    color: #4b5563;
+}
+
+.delete-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.delete-confirm-btn {
+    background: linear-gradient(135deg, #dc3545, #b02a37);
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 25px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 3px 8px rgba(220, 53, 69, 0.3);
+}
+
+.delete-confirm-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+}
+
+.delete-cancel-btn {
+    background: linear-gradient(135deg, #6c757d, #5a6268);
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 25px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 3px 8px rgba(108, 117, 125, 0.3);
+}
+
+.delete-cancel-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(108, 117, 125, 0.4);
+}
+    </style>
+</head>
+<body>
+
+    <div class="container-fluid">
+        <h2>قائمة الضباط</h2>
+
+        <!-- شريط البحث -->
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="ابحث عن ضابط..." onkeyup="filterTable()">
+        </div>
+
+        <a href="{% url 'create_officer' %}" class="btn-add">إضافة ضابط جديد</a>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>الإجراءات</th>
+                    <th onclick="sortTable(0)">الرقم الوظيفي <i class="fas fa-sort"></i></th>
+                    <th onclick="sortTable(1)">الاسم الكامل <i class="fas fa-sort"></i></th>
+                    <th onclick="sortTable(2)">الرتبة <i class="fas fa-sort"></i></th>
+                    <th onclick="sortTable(3)">الدور <i class="fas fa-sort"></i></th>
+                </tr>
+            </thead>
+            <tbody id="officerTable">
+                {% for officer in officers %}
+                <tr>
+                    <td class="actions">
+                        <a href="{% url 'edit_officer' officer.id %}" class="edit"><i class="fas fa-edit"></i> تعديل</a>
+                        <a href="{% url 'delete_officer' officer.id %}" class="delete"><i class="fas fa-trash-alt"></i> حذف</a>
+                    </td>
+                    <td>{{ officer.officer_number }}</td>
+                    <td>{{ officer.full_name }}</td>
+                    <td>{{ officer.rank }}</td>
+                    <td>{{ officer.role }}</td>   
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- إذا لم توجد بيانات -->
+        {% if not officers %}
+        <p class="no-data">لا توجد بيانات متاحة.</p>
+        {% endif %}
+
+    </div>
+
+    <!-- JavaScript للبحث والفرز -->
+    <script>
+        // البحث في الجدول
+        function filterTable() {
+            const input = document.getElementById('searchInput');
+            const filter = input.value.toLowerCase();
+            const rows = document.querySelectorAll('#officerTable tr');
+
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                let match = false;
+
+                cells.forEach(cell => {
+                    if (cell && cell.textContent.toLowerCase().includes(filter)) {
+                        match = true;
+                    }
+                });
+
+                row.style.display = match ? '' : 'none';
+            });
+        }
+
+        // الفرز حسب عمود معين
+        function sortTable(columnIndex) {
+            const table = document.querySelector('.table');
+            const rows = Array.from(table.rows).slice(1);
+            let isAscending = table.getAttribute('data-sort-order') === 'asc';
+
+            rows.sort((rowA, rowB) => {
+                const cellA = rowA.cells[columnIndex].textContent.trim().toLowerCase();
+                const cellB = rowB.cells[columnIndex].textContent.trim().toLowerCase();
+
+                if (cellA < cellB) return isAscending ? -1 : 1;
+                if (cellA > cellB) return isAscending ? 1 : -1;
+                return 0;
+            });
+
+            rows.forEach(row => table.tBodies[0].appendChild(row));
+            table.setAttribute('data-sort-order', isAscending ? 'desc' : 'asc');
+        }
+
+        // رسالة تأكيد الحذف (إصدارة محسنة)
+function showDeleteConfirmation(deleteUrl) {
+    // إنشاء عناصر التأكيد
+    const overlay = document.createElement('div');
+    overlay.className = 'delete-overlay';
+    
+    const confirmBox = document.createElement('div');
+    confirmBox.className = 'delete-confirm-box';
+    
+    // تصميم الصندوق
+    confirmBox.innerHTML = `
+        <div class="delete-header">
+            <i class="fas fa-exclamation-triangle warning-icon"></i>
+            <h4>تأكيد الحذف</h4>
+        </div>
+        <p class="delete-message">هل أنت متأكد أنك تريد حذف هذا الضابط؟</p>
+        <div class="delete-buttons">
+            <button id="confirmDelete" class="delete-confirm-btn">
+                <i class="fas fa-check"></i> تأكيد
+            </button>
+            <button id="cancelDelete" class="delete-cancel-btn">
+                <i class="fas fa-times"></i> إلغاء
+            </button>
+        </div>
+    `;
+    
+    // إضافة العناصر للصفحة
+    document.body.appendChild(overlay);
+    document.body.appendChild(confirmBox);
+    
+    // أحداث الأزرار
+    document.getElementById('confirmDelete').addEventListener('click', () => {
+        window.location.href = deleteUrl;
+    });
+    
+    document.getElementById('cancelDelete').addEventListener('click', closeDeleteDialog);
+    overlay.addEventListener('click', closeDeleteDialog);
+    
+    // تأثير الظهور
+    setTimeout(() => {
+        overlay.style.opacity = '1';
+        confirmBox.style.opacity = '1';
+        confirmBox.style.transform = 'translate(-50%, -50%) scale(1)';
+    }, 10);
+    
+    // إغلاق الصندوق
+    function closeDeleteDialog() {
+        overlay.style.opacity = '0';
+        confirmBox.style.opacity = '0';
+        confirmBox.style.transform = 'translate(-50%, -50%) scale(0.9)';
+        
+        setTimeout(() => {
+            document.body.removeChild(overlay);
+            document.body.removeChild(confirmBox);
+        }, 300);
+    }
+}
+
+// إضافة حدث الحذف لكل الأزرار
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.delete').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            showDeleteConfirmation(this.getAttribute('href'));
+        });
+    });
+});
+    </script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
+
+
+{% endblock %}

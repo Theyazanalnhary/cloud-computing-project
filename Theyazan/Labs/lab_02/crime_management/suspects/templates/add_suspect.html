@@ -1,0 +1,1010 @@
+{% extends "base.html" %}
+{% block content %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إضافة بيانات المتهم</title>
+    
+    <!-- Bootstrap RTL CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts - Tajawal -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+    <style>
+        :root {
+            --primary-color: #4a148c;
+            --secondary-color: #7b1fa2;
+            --accent-color: #e91e63;
+            --dark-color: #1a237e;
+            --light-color: #f8f9fa;
+            --success-color: #2e7d32;
+            --warning-color: #ff8f00;
+            --danger-color: #c62828;
+            --card-bg: #ffffff;
+            --input-bg: #f8f9fa;
+            --border-radius: 12px;
+            --box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --icon-size: 1.2rem;
+            --icon-bg-size: 42px;
+        }
+        
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e3e9f2 100%);
+            min-height: 100vh;
+            color: #333;
+            padding: 20px;
+        }
+        
+        .suspect-form-container {
+            max-width: 950px;
+            margin: 30px auto;
+            padding: 40px;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .suspect-form-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+        }
+        
+        .form-header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+            padding-bottom: 20px;
+        }
+        
+        .form-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 50%;
+            transform: translateX(50%);
+            width: 120px;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+            border-radius: 2px;
+        }
+        
+        .form-title {
+            font-size: 2.2rem;
+            font-weight: 900;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+        
+        .form-subtitle {
+            color: #6c757d;
+            font-size: 1.1rem;
+            margin-bottom: 0;
+        }
+        
+        .form-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            display: inline-block;
+            background: rgba(74, 20, 140, 0.1);
+            width: 90px;
+            height: 90px;
+            line-height: 90px;
+            border-radius: 50%;
+            text-align: center;
+            transition: var(--transition);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .form-icon:hover {
+            transform: rotate(10deg) scale(1.1);
+            background: rgba(74, 20, 140, 0.2);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+        }
+        
+        .form-section {
+            margin-bottom: 30px;
+            padding: 25px;
+            background: rgba(248, 249, 250, 0.5);
+            border-radius: var(--border-radius);
+            border-left: 4px solid var(--primary-color);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .form-section:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transform: translateY(-2px);
+        }
+        
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+        }
+        
+        .section-title i {
+            margin-left: 10px;
+            font-size: var(--icon-size);
+            color: var(--accent-color);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+            color: var(--dark-color);
+            transition: var(--transition);
+            padding-right: 5px;
+        }
+        
+        .form-control, .form-select {
+            border-radius: var(--border-radius);
+            padding: 14px 18px;
+            border: 2px solid #e0e0e0;
+            background-color: var(--input-bg);
+            transition: var(--transition);
+            font-size: 1rem;
+            height: auto;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(233, 30, 99, 0.15);
+            background-color: white;
+        }
+        
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .input-icon {
+            position: relative;
+        }
+        
+        .input-icon i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary-color);
+            transition: var(--transition);
+            background: rgba(74, 20, 140, 0.1);
+            width: var(--icon-bg-size);
+            height: var(--icon-bg-size);
+            line-height: var(--icon-bg-size);
+            text-align: center;
+            border-radius: 50%;
+            font-size: var(--icon-size);
+        }
+        
+        .input-icon .form-control {
+            padding-right: 18px;
+            padding-left: calc(var(--icon-bg-size) + 25px);
+        }
+        
+        .input-icon .form-control:focus + i {
+            color: var(--accent-color);
+            transform: translateY(-50%) scale(1.1);
+            background: rgba(233, 30, 99, 0.1);
+        }
+        
+        .btn-submit {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: var(--border-radius);
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(123, 31, 162, 0.3);
+            margin-top: 10px;
+            width: 100%;
+            max-width: 250px;
+        }
+        
+        .btn-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(123, 31, 162, 0.4);
+        }
+        
+        .btn-submit i {
+            margin-left: 8px;
+            font-size: var(--icon-size);
+        }
+        
+        .text-danger {
+            color: var(--danger-color);
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-top: 6px;
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .is-invalid {
+            border-color: var(--danger-color) !important;
+            background-image: none;
+        }
+        
+        .is-invalid:focus {
+            box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.15);
+        }
+        
+        .form-note {
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-top: 6px;
+            font-style: italic;
+        }
+        
+        /* Animations */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        /* تأثيرات الأيقونات عند التركيز */
+        .input-icon i.fa-beat {
+            animation: beat 0.7s ease infinite;
+        }
+        
+        @keyframes beat {
+            0%, 100% { transform: translateY(-50%) scale(1); }
+            50% { transform: translateY(-50%) scale(1.2); }
+        }
+        
+        /* تأثيرات النص عند الخطأ */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+        
+        .shake {
+            animation: shake 0.6s ease;
+        }
+
+        /* تخصيصات خاصة بصفحة المتهم */
+        .gender-select {
+            position: relative;
+        }
+        
+        .gender-select i {
+            position: absolute;
+            top: 50%;
+            left: 15px;
+            transform: translateY(-50%);
+            background: rgba(74, 20, 140, 0.1);;
+            color: var(--primary-color);
+            border-radius: 55%;
+            pointer-events: none;
+        }
+        
+        .form-check-input:checked {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        /* تعديلات للاستجابة على الشاشات الصغيرة */
+        @media (max-width: 768px) {
+            :root {
+                --icon-bg-size: 36px;
+                --icon-size: 1rem;
+            }
+            
+            .suspect-form-container {
+                padding: 25px;
+            }
+            
+            .form-title {
+                font-size: 1.8rem;
+            }
+            
+            .form-icon {
+                width: 70px;
+                height: 70px;
+                line-height: 70px;
+                font-size: 2.2rem;
+            }
+            
+            .form-section {
+                padding: 15px;
+            }
+            
+            .input-icon i {
+                width: 36px;
+                height: 36px;
+                line-height: 36px;
+                font-size: 1rem;
+            }
+            
+            .input-icon .form-control {
+                padding-left: calc(36px + 20px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="suspect-form-container">
+        <div class="form-header">
+            <div class="form-icon floating">
+                <i class="fas fa-user-secret"></i>
+            </div>
+            <h1 class="form-title">إضافة بيانات المتهم</h1>
+            <p class="form-subtitle">نموذج إضافة بيانات متهم جديد</p>
+        </div>
+        
+        <form method="POST" id="suspectForm" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <!-- المعلومات الأساسية -->
+            <div class="form-section">
+                <h3 class="section-title">
+                    <i class="fas fa-info-circle"></i> المعلومات الأساسية
+                </h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.full_name.id_for_label }}" class="form-label">
+                                الاسم الكامل
+                            </label>
+                            <div class="input-icon">
+                                <i class="fas fa-user"></i>
+                                {{ form.full_name }}
+                            </div>
+                            <small class="text-danger">{{ form.full_name.errors }}</small>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.nickname.id_for_label }}" class="form-label">
+                                اللقب
+                            </label>
+                            <div class="input-icon">
+                                <i class="fas fa-signature"></i>
+                                {{ form.nickname }}
+                            </div>
+                            <small class="text-danger">{{ form.nickname.errors }}</small>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.gender.id_for_label }}" class="form-label">
+                                الجنس
+                            </label>
+                            <div class="gender-select">
+                                <i class="fas fa-venus-mars"></i>
+                                {{ form.gender }}
+                            </div>
+                            <small class="text-danger">{{ form.gender.errors }}</small>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.age.id_for_label }}" class="form-label">
+                                العمر
+                            </label>
+                            <div class="input-icon">
+                                <i class="fas fa-birthday-cake"></i>
+                                {{ form.age }}
+                            </div>
+                            <small class="text-danger">{{ form.age.errors }}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- المعلومات الشخصية -->
+            <div class="form-section">
+                <h3 class="section-title">
+                    <i class="fas fa-id-card"></i> المعلومات الشخصية
+                </h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.country.id_for_label }}" class="form-label">
+                                البلد
+                            </label>
+                            <div class="input-icon">
+                                <i class="fas fa-globe"></i>
+                                {{ form.country }}
+                            </div>
+                            <small class="text-danger">{{ form.country.errors }}</small>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.nationality.id_for_label }}" class="form-label">
+                                الجنسية
+                            </label>
+                            <div class="input-icon">
+                                <i class="fas fa-passport"></i>
+                                {{ form.nationality }}
+                            </div>
+                            <small class="text-danger">{{ form.nationality.errors }}</small>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.residence.id_for_label }}" class="form-label">
+                                محل الإقامة
+                            </label>
+                            <div class="input-icon">
+                                <i class="fas fa-home"></i>
+                                {{ form.residence }}
+                            </div>
+                            <small class="text-danger">{{ form.residence.errors }}</small>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.phone.id_for_label }}" class="form-label">
+                                رقم الهاتف
+                            </label>
+                            <div class="input-icon">
+                                <i class="fas fa-phone"></i>
+                                {{ form.phone }}
+                            </div>
+                            <small class="text-danger">{{ form.phone.errors }}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- المعلومات المهنية -->
+            <div class="form-section">
+                <h3 class="section-title">
+                    <i class="fas fa-briefcase"></i> المعلومات المهنية
+                </h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.job.id_for_label }}" class="form-label">
+                                المهنة
+                            </label>
+                            <div class="input-icon">
+                                <i class="fas fa-user-tie"></i>
+                                {{ form.job }}
+                            </div>
+                            <small class="text-danger">{{ form.job.errors }}</small>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.workplace.id_for_label }}" class="form-label">
+                                جهة العمل
+                            </label>
+                            <div class="input-icon">
+                                <i class="fas fa-building"></i>
+                                {{ form.workplace }}
+                            </div>
+                            <small class="text-danger">{{ form.workplace.errors }}</small>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.education_level.id_for_label }}" class="form-label">
+                                المستوى التعليمي
+                            </label>
+                            <div class="input-icon">
+                                <i class="fas fa-graduation-cap"></i>
+                                {{ form.education_level }}
+                            </div>
+                            <small class="text-danger">{{ form.education_level.errors }}</small>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.marital_status.id_for_label }}" class="form-label">
+                                الحالة الاجتماعية
+                            </label>
+                            <div class="input-icon">
+                                <i class="fas fa-heart"></i>
+                                {{ form.marital_status }}
+                            </div>
+                            <small class="text-danger">{{ form.marital_status.errors }}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- المعلومات الجنائية -->
+            <div class="form-section">
+                <h3 class="section-title">
+                    <i class="fas fa-gavel"></i> المعلومات الجنائية
+                </h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.relationship_with_victim.id_for_label }}" class="form-label">
+                                العلاقة بالمجني عليه
+                            </label>
+                            <div class="input-icon">
+                                <i class="fas fa-users"></i>
+                                {{ form.relationship_with_victim }}
+                            </div>
+                            <small class="text-danger">{{ form.relationship_with_victim.errors }}</small>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.role_in_crime.id_for_label }}" class="form-label">
+                                دور في الجريمة
+                            </label>
+                            <div class="input-icon">
+                                <i class="fas fa-user-shield"></i>
+                                {{ form.role_in_crime }}
+                            </div>
+                            <small class="text-danger">{{ form.role_in_crime.errors }}</small>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group">
+                         <!-- تغيير حقل التاريخ -->
+<label for="{{ form.preventive_detention_date.id_for_label }}" class="form-label">
+    تاريخ الحبس الاحتياطي
+</label>
+<div class="input-icon">
+    <i class="fas fa-calendar-day"></i>
+    {{ form.preventive_detention_date }}
+</div>
+                            <small class="text-danger">{{ form.detention_date.errors }}</small>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.release_date.id_for_label }}" class="form-label">
+                                تاريخ الإفراج
+                            </label>
+                            <div class="input-icon">
+                                <i class="fas fa-calendar-check"></i>
+                                {{ form.release_date }}
+                            </div>
+                            <small class="text-danger">{{ form.release_date.errors }}</small>
+                        </div>
+                    </div>
+                    
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label for="{{ form.previous_crimes.id_for_label }}" class="form-label">
+                                سجل الجرائم السابقة
+                            </label>
+                            {{ form.previous_crimes }}
+                            <small class="text-danger">{{ form.previous_crimes.errors }}</small>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-check form-switch">
+                            {{ form.is_fugitive }}
+                            <label for="{{ form.is_fugitive.id_for_label }}" class="form-check-label">
+                                هل المتهم هارب؟
+                            </label>
+                            <small class="text-danger">{{ form.is_fugitive.errors }}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- صورة المتهم -->
+            <div class="form-section">
+                <h3 class="section-title">
+                    <i class="fas fa-camera"></i> صورة المتهم
+                </h3>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.photo.id_for_label }}" class="form-label">
+                                صورة المتهم
+                            </label>
+                            <div class="input-icon">
+                                <i class="fas fa-image"></i>
+                                {{ form.photo }}
+                            </div>
+                            <small class="text-danger">{{ form.photo.errors }}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-submit">
+                    <i class="fas fa-save"></i> حفظ البيانات
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- تضمين مكتبة SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- تمرير رسائل Django بشكل JSON آمن -->
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // ============== معالجة الرسائل الأولية ==============
+    try {
+        const messagesJson = '{{ messages_json|escapejs }}';
+        if (messagesJson && messagesJson !== '[]') {
+            const messages = JSON.parse(messagesJson);
+            showSweetAlertMessages(messages);
+        }
+    } catch (error) {
+        console.error('Error processing initial messages:', error);
+        showSweetAlert({
+            icon: 'error',
+            title: 'حدث خطأ في عرض الرسائل',
+            text: error.message
+        });
+    }
+
+    // ============== متغيرات مهمة ==============
+    const form = document.getElementById('suspectForm');
+    if (!form) return;
+
+    const requiredFields = form.querySelectorAll('[required]');
+    const allFields = form.querySelectorAll('input, textarea, select');
+    const phoneField = form.querySelector('input[name="phone"]');
+    const ageField = form.querySelector('input[name="age"]');
+    const fullNameField = form.querySelector('input[name="full_name"]');
+
+    // ============== أحداث التركيز والضغط ==============
+    allFields.forEach((field, index) => {
+        // التنقل بين الحقول باستخدام Enter
+        field.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                if (index < allFields.length - 1) {
+                    allFields[index + 1].focus();
+                }
+            }
+        });
+
+        // تأثيرات الأيقونات عند التركيز
+        field.addEventListener('focus', function () {
+            const icon = this.parentElement.querySelector('i');
+            if (icon) {
+                icon.classList.add('fa-beat');
+                icon.style.color = 'var(--accent-color)';
+            }
+        });
+
+        field.addEventListener('blur', function () {
+            const icon = this.parentElement.querySelector('i');
+            if (icon) {
+                icon.classList.remove('fa-beat');
+                icon.style.color = 'var(--primary-color)';
+            }
+        });
+    });
+
+    // ============== التحقق من الصحة ==============
+    if (fullNameField) {
+        fullNameField.addEventListener('blur', () => validateFullName(fullNameField));
+    }
+
+    if (phoneField) {
+        phoneField.addEventListener('blur', () => validatePhone(phoneField));
+    }
+
+    if (ageField) {
+        ageField.addEventListener('blur', () => validateAge(ageField));
+    }
+
+    // ============== إرسال الفورم ==============
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        
+        // التحقق من الصحة قبل الإرسال
+        let isValid = true;
+        
+        // التحقق من الحقول المطلوبة
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                showError(field, 'هذا الحقل مطلوب');
+                isValid = false;
+            }
+        });
+
+        // التحقق من الحقول الخاصة
+        if (fullNameField && !validateFullName(fullNameField)) isValid = false;
+        if (phoneField && !validatePhone(phoneField)) isValid = false;
+        if (ageField && !validateAge(ageField)) isValid = false;
+
+        if (!isValid) {
+            showSweetAlert({
+                icon: 'error',
+                title: 'خطأ في الإدخال',
+                html: 'يوجد أخطاء في بعض الحقول، يرجى تصحيحها:<br>' +
+                      '- تأكد من صحة الاسم الكامل (بدون أرقام)<br>' +
+                      '- تأكد من صحة رقم الهاتف (يبدأ بـ 7 ويتكون من 9 أرقام)<br>' +
+                      '- تأكد من صحة العمر (بين 10 و120 سنة)'
+            });
+            return;
+        }
+
+        // إعداد البيانات للإرسال
+        const formData = new FormData(form);
+        submitFormData(formData);
+    });
+
+    // ============== دوال مساعدة ==============
+    function validateFullName(field) {
+        if (!field.value.trim()) {
+            showError(field, 'حقل الاسم الكامل مطلوب');
+            return false;
+        }
+        if (/[0-9]/.test(field.value)) {
+            showError(field, 'لا يُسمح بإدخال أرقام في الاسم');
+            return false;
+        }
+        clearError(field);
+        return true;
+    }
+
+    function validatePhone(field) {
+        if (!field.value.trim()) {
+            showError(field, 'حقل رقم الهاتف مطلوب');
+            return false;
+        }
+        const phoneNumber = field.value.replace(/[\s-]/g, '');
+        if (!/^7\d{8}$/.test(phoneNumber)) {
+            showError(field, 'يجب أن يبدأ رقم الهاتف بـ 7 ويتكون من 9 أرقام');
+            return false;
+        }
+        clearError(field);
+        return true;
+    }
+
+    function validateAge(field) {
+        if (!field.value.trim()) {
+            showError(field, 'حقل العمر مطلوب');
+            return false;
+        }
+        const age = parseInt(field.value);
+        if (isNaN(age)) {
+            showError(field, 'يجب إدخال رقم صحيح');
+            return false;
+        }
+        if (age < 10 || age > 120) {
+            showError(field, 'يجب أن يكون العمر بين 10 و120 سنة');
+            return false;
+        }
+        clearError(field);
+        return true;
+    }
+
+    function showError(field, message) {
+        const formGroup = field.closest('.form-group');
+        if (!formGroup) return;
+        
+        let errorElement = formGroup.querySelector('.text-danger');
+        if (!errorElement) {
+            errorElement = document.createElement('div');
+            errorElement.className = 'text-danger mt-2';
+            formGroup.appendChild(errorElement);
+        }
+        
+        errorElement.textContent = message;
+        field.classList.add('is-invalid', 'shake');
+        setTimeout(() => field.classList.remove('shake'), 600);
+    }
+
+    function clearError(field) {
+        field.classList.remove('is-invalid');
+        const formGroup = field.closest('.form-group');
+        if (!formGroup) return;
+        
+        const errorElement = formGroup.querySelector('.text-danger');
+        if (errorElement) {
+            errorElement.remove();
+        }
+    }
+    function submitFormData(formData) {
+    showLoading();
+
+    fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(err => {
+                // إذا كان هناك رسائل أخطاء
+                if (err.messages) {
+                    showSweetAlertMessages(err.messages);
+                }
+                // إذا كان هناك خطأ عام
+                if (err.message) {
+                    showSweetAlert({
+                        icon: 'error',
+                        title: 'خطأ',
+                        text: err.message,
+                        confirmButtonText: 'حسناً'
+                    });
+                }
+                return Promise.reject(err);
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        Swal.close();
+        
+        if (data.messages) {
+            showSweetAlertMessages(data.messages);
+        }
+
+        if (data.success && data.redirect_url) {
+            window.location.href = data.redirect_url;
+        } else if (data.errors) {
+            // معالجة أخطاء الحقول
+            for (const field in data.errors) {
+                const fieldElement = form.querySelector(`[name="${field}"]`);
+                if (fieldElement) {
+                    showError(fieldElement, data.errors[field][0]);
+                }
+            }
+            
+            // إذا كان هناك خطأ عام (غير مرتبط بحقل معين)
+            if (data.message && data.message !== 'حدث خطأ في الإدخال، يرجى تصحيح الأخطاء.') {
+                showSweetAlert({
+                    icon: 'error',
+                    title: data.message,
+                    confirmButtonText: 'حسناً'
+                });
+            }
+        }
+    })
+    .catch(error => {
+        Swal.close();
+        console.error('Error:', error);
+        
+        let errorMessage = 'حدث خطأ أثناء محاولة حفظ البيانات';
+        if (error.message) {
+            errorMessage = error.message;
+        } else if (error.errors && typeof error.errors === 'object') {
+            errorMessage = Object.values(error.errors)[0][0];
+        }
+        
+        showSweetAlert({
+            icon: 'error',
+            title: 'خطأ',
+            text: errorMessage,
+            confirmButtonText: 'حسناً'
+        });
+    });
+}
+    function showSweetAlertMessages(messages) {
+        // عرض الرسائل واحدة تلو الأخرى
+        function showNextMessage(index) {
+            if (index >= messages.length) return;
+            
+            const msg = messages[index];
+            showSweetAlert({
+                position: 'center',
+                icon: msg.tags === 'error' ? 'error' :
+                      msg.tags === 'success' ? 'success' :
+                      msg.tags === 'warning' ? 'warning' : 'info',
+                title: msg.text,
+                showConfirmButton: false,
+                timer: 3000,
+                customClass: {
+                    popup: 'swal2-popup-arabic'
+                }
+            }).then(() => {
+                showNextMessage(index + 1);
+            });
+        }
+        
+        showNextMessage(0);
+    }
+
+    function showSweetAlert(options) {
+        const defaultOptions = {
+            customClass: {
+                popup: 'swal2-popup-arabic'
+            },
+            confirmButtonText: 'موافق',
+            cancelButtonText: 'إلغاء'
+        };
+        
+        return Swal.fire({ ...defaultOptions, ...options });
+    }
+
+    function showLoading() {
+        Swal.fire({
+            title: 'جاري المعالجة',
+            html: 'يرجى الانتظار...',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+    }
+});
+</script>
+
+</body>
+</html>
+{% endblock %}
+

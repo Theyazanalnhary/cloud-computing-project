@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الصفحة الرئيسية - نظام إدارة بنك الدم</title>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>نظام إدارة بنك الدم</h1>
+            <p class="welcome-message">مرحبًا بك في نظام إدارة بنك الدم، حيث نساعد في حفظ الأرواح!</p>
+        </header>
+
+        <nav class="navbar">
+            <ul>
+               
+                
+                <!-- زر إدارة المستخدمين يظهر فقط إذا كان المستخدم هو مدير -->
+                {% if user_is_admin %}
+                {% endif %}
+                
+            </ul>
+        </nav>
+
+        <footer>
+        </footer>
+    </div>
+</body>
+</html>

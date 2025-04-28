@@ -1,0 +1,95 @@
+{% extends 'dashboard/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="advanced-search">
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3>البحث المتقدم</h3>
+        </div>
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">كلمات البحث</label>
+                    <input type="text" name="q" class="form-control" value="{{ request.GET.q }}">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">الحالة</label>
+                    <select name="status" class="form-select">
+                        <option value="">الكل</option>
+                        {% for status in status_choices %}
+                        <option value="{{ status.0 }}" {% if request.GET.status == status.0 %}selected{% endif %}>
+                            {{ status.1 }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">الأولوية</label>
+                    <select name="priority" class="form-select">
+                        <option value="">الكل</option>
+                        {% for priority in priority_choices %}
+                        <option value="{{ priority.0 }}" {% if request.GET.priority == priority.0 %}selected{% endif %}>
+                            {{ priority.1 }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">من تاريخ</label>
+                    <input type="date" name="date_from" class="form-control" value="{{ request.GET.date_from }}">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">إلى تاريخ</label>
+                    <input type="date" name="date_to" class="form-control" value="{{ request.GET.date_to }}">
+                </div>
+                <div class="col-12 text-center">
+                    <button type="submit" class="btn btn-primary">بحث</button>
+                    <a href="{% url 'reports:advanced_search' %}" class="btn btn-secondary">إعادة تعيين</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- نتائج البحث -->
+    <div class="card">
+        <div class="card-header">
+            <h4>نتائج البحث ({{ reports.count }})</h4>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>العنوان</th>
+                            <th>تاريخ البلاغ</th>
+                            <th>الحالة</th>
+                            <th>الأولوية</th>
+                            <th>الموقع</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for report in reports %}
+                        <tr>
+                            <td>{{ report.title }}</td>
+                            <td>{{ report.date_reported|date:"Y-m-d H:i" }}</td>
+                            <td><span class="badge bg-{{ report.get_status_color }}">{{ report.get_status_display }}</span></td>
+                            <td><span class="badge bg-{{ report.get_priority_color }}">{{ report.get_priority_display }}</span></td>
+                            <td>{{ report.location }}</td>
+                            <td>
+                                <a href="{% url 'reports:detail' report.pk %}" class="btn btn-sm btn-info">عرض</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center">لا توجد نتائج</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

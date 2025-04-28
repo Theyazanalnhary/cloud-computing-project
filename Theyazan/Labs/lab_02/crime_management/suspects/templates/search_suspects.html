@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <!-- عنوان الصفحة -->
+    <h2 class="text-center mb-4">بحث المتهمين</h2>
+
+    <!-- نموذج البحث -->
+    <form method="GET" class="mb-5">
+        <div class="row g-3 align-items-center justify-content-center">
+            <div class="col-md-6">
+                <label for="{{ form.query.id_for_label }}" class="form-label">الاسم الكامل</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-person"></i></span>
+                    {{ form.query }}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label for="{{ form.report_number.id_for_label }}" class="form-label">رقم البلاغ</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-file-earmark-text"></i></span>
+                    {{ form.report_number }}
+                </div>
+            </div>
+            <div class="col-12 text-center">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="bi bi-search"></i> بحث
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <!-- عرض النتائج -->
+    {% if crimes_details %}
+    <h4 class="text-center mb-4">نتائج البحث</h4>
+    <table class="table table-bordered table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th scope="col">الاسم الكامل</th>
+                <th scope="col">العمر</th>
+                <th scope="col">رقم الهاتف</th>
+                <th scope="col">الجرائم المرتبطة</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in crimes_details %}
+            <tr>
+                <td>{{ item.suspect.full_name }}</td>
+                <td>{{ item.suspect.age }}</td>
+                <td>{{ item.suspect.phone|default:"غير متوفر" }}</td>
+                <td>
+                    <strong>الجرائم:</strong><br>
+                    <ul class="list-unstyled">
+                        {% for crime in item.crimes %}
+                        <li>
+                            <span class="badge bg-info">{{ crime.report_number }}</span>:
+                            <strong>نوع الجريمة:</strong> {{ crime.crime_type }} |
+                            <strong>التاريخ:</strong> {{ crime.crime_date }}<br>
+                            <small class="text-muted">{{ crime.description|truncatewords:8 }}</small>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="alert alert-warning text-center" role="alert">
+        <i class="bi bi-exclamation-triangle-fill"></i> لم يتم العثور على أي نتائج.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

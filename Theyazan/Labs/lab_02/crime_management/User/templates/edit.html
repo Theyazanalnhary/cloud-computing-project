@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تعديل بيانات الضابط</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome للأيقونات -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- خطوط Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Animate.css للحركات -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+
+    <!-- الأنماط الخاصة -->
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --primary-dark: #4338ca;
+            --secondary-color: #7c3aed;
+            --accent-color: #8b5cf6;
+            --light-bg: #f8fafc;
+            --dark-text: #1e293b;
+            --success-color: #10b981;
+            --error-color: #ef4444;
+            --warning-color: #f59e0b;
+        }
+        
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            color: var(--dark-text);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .form-container {
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 40px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .form-container:hover {
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+            transform: translateY(-2px);
+        }
+        
+        .form-header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .form-header h2 {
+            color: var(--primary-dark);
+            font-weight: 700;
+            margin-bottom: 10px;
+            font-size: 1.8rem;
+        }
+        
+        .form-header::after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            margin: 15px auto;
+            border-radius: 2px;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .form-label i {
+            margin-left: 8px;
+            font-size: 1.1rem;
+        }
+        
+        .form-control {
+            border-radius: 8px;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s;
+            background-color: #f8fafc;
+        }
+        
+        .form-control:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+            background-color: white;
+        }
+        
+        .input-group-text {
+            background-color: #f1f5f9;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px 0 0 8px;
+        }
+        
+        /* أزرار متناسقة */
+        .btn-save {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-weight: 700;
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(79, 70, 229, 0.2);
+            width: 100%;
+            margin-top: 1rem;
+        }
+        
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(79, 70, 229, 0.25);
+            background: linear-gradient(135deg, var(--primary-dark) 0%, #6d28d9 100%);
+        }
+        
+        .btn-save:active {
+            transform: translateY(0);
+        }
+        
+        .btn-back {
+            background: transparent;
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-weight: 600;
+            color: var(--primary-color);
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 1rem;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+        }
+        
+        .btn-back:hover {
+            background-color: #f5f3ff;
+            color: var(--primary-dark);
+            border-color: var(--primary-dark);
+        }
+        
+        .floating-label {
+            position: relative;
+            margin-bottom: 25px;
+        }
+        
+        .floating-label input, 
+        .floating-label select {
+            height: 50px;
+            padding-top: 18px;
+        }
+        
+        .floating-label label {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            color: #64748b;
+            transition: all 0.3s;
+            pointer-events: none;
+            font-size: 0.9rem;
+        }
+        
+        .floating-label input:focus + label,
+        .floating-label input:not(:placeholder-shown) + label,
+        .floating-label select:focus + label,
+        .floating-label select:valid + label {
+            top: 5px;
+            right: 15px;
+            font-size: 0.75rem;
+            color: var(--primary-color);
+            background: white;
+            padding: 0 5px;
+        }
+        
+        .error-message {
+            color: var(--error-color);
+            font-size: 0.9rem;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .error-message i {
+            margin-left: 5px;
+        }
+        
+        .success-message {
+            color: var(--success-color);
+            text-align: center;
+            margin-top: 15px;
+            font-weight: 600;
+            animation: fadeIn 0.5s;
+        }
+        
+        .warning-message {
+            color: var(--warning-color);
+            text-align: center;
+            margin-top: 15px;
+            font-weight: 600;
+            animation: fadeIn 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* تأثيرات للعناصر عند التحميل */
+        .animate-form {
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        /* تكييف للهواتف */
+        @media (max-width: 576px) {
+            .form-container {
+                padding: 25px;
+                margin: 15px auto;
+            }
+            
+            .form-header h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container animate__animated animate__fadeInUp">
+        <div class="form-header">
+            <h2><i class="fas fa-user-edit"></i> تعديل بيانات الضابط</h2>
+            <p class="text-muted">قم بتعديل البيانات أدناه ثم اضغط على حفظ التغييرات</p>
+        </div>
+        
+        <!-- رسائل التنبيه -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} animate__animated animate__fadeIn">
+                    <i class="fas 
+                        {% if message.tags == 'success' %}fa-check-circle{% endif %}
+                        {% if message.tags == 'error' %}fa-exclamation-circle{% endif %}
+                        {% if message.tags == 'warning' %}fa-exclamation-triangle{% endif %}
+                    "></i>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+        
+        <form method="post" id="editOfficerForm" class="needs-validation" novalidate>
+            {% csrf_token %}
+            
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="floating-label">
+                        <input type="text" name="username" id="id_username" class="form-control" placeholder=" " value="{{ form.username.value }}" required>
+                        <label for="id_username"><i class="fas fa-user"></i> اسم المستخدم</label>
+                        <div class="invalid-feedback">يرجى إدخال اسم المستخدم</div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 mb-4">
+                    <div class="floating-label">
+                        <input type="password" name="password" id="id_password" class="form-control" placeholder=" ">
+                        <label for="id_password"><i class="fas fa-lock"></i> كلمة المرور (اتركه فارغًا إذا لم ترغب في التغيير)</label>
+                        <i class="fas fa-eye password-toggle" id="togglePassword" style="position: absolute; left: 15px; top: 15px; cursor: pointer;"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="floating-label">
+                        <input type="text" name="officer_number" id="id_officer_number" class="form-control" placeholder=" " value="{{ form.officer_number.value }}" required>
+                        <label for="id_officer_number"><i class="fas fa-id-badge"></i> الرقم الوظيفي</label>
+                        <div class="invalid-feedback">يرجى إدخال الرقم الوظيفي</div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 mb-4">
+                    <div class="floating-label">
+                        <input type="text" name="full_name" id="id_full_name" class="form-control" placeholder=" " value="{{ form.full_name.value }}" required>
+                        <label for="id_full_name"><i class="fas fa-signature"></i> الاسم الكامل</label>
+                        <div class="invalid-feedback">يرجى إدخال الاسم الكامل</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="floating-label">
+                        <input type="text" name="rank" id="id_rank" class="form-control" placeholder=" " value="{{ form.rank.value }}" required>
+                        <label for="id_rank"><i class="fas fa-star"></i> الرتبة</label>
+                        <div class="invalid-feedback">يرجى إدخال الرتبة</div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 mb-4">
+                    <div class="floating-label">
+                        <input type="text" name="id_number" id="id_id_number" class="form-control" placeholder=" " value="{{ form.id_number.value }}" required>
+                        <label for="id_id_number"><i class="fas fa-id-card"></i> رقم الهوية</label>
+                        <div class="invalid-feedback">يرجى إدخال رقم الهوية</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-4">
+                <div class="floating-label">
+                    <select name="role" id="id_role" class="form-control" required>
+                        <option value="مدير" {% if form.role.value == "مدير" %}selected{% endif %}>مدير</option>
+                        <option value="مدخل بيانات" {% if form.role.value == "مدخل بيانات" %}selected{% endif %}>مدخل بيانات</option>
+                        <option value="معدل" {% if form.role.value == "معدل" %}selected{% endif %}>معدل</option>
+                        <option value="مسؤول تقارير" {% if form.role.value == "مسؤول تقارير" %}selected{% endif %}>مسؤول تقارير</option>
+                    </select>
+                    <label for="id_role"><i class="fas fa-user-tag"></i> الدور</label>
+                    <div class="invalid-feedback">يرجى اختيار الدور</div>
+                </div>
+            </div>
+            
+            <div class="d-flex flex-column">
+                <button type="submit" class="btn btn-save">
+                    <i class="fas fa-save"></i> حفظ التغييرات
+                </button>
+                
+                <a href="{% url 'officer_list' %}" class="btn btn-back">
+                    <i class="fas fa-arrow-right"></i> العودة إلى القائمة
+                </a>
+            </div>
+        </form>
+        
+        <!-- منطقة الرسائل -->
+        <div id="messageContainer"></div>
+        
+        {% if form.errors %}
+            <div class="alert alert-danger mt-3 animate__animated animate__shakeX">
+                <i class="fas fa-exclamation-circle"></i> يرجى التحقق من البيانات المدخلة
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // التحقق من صحة النموذج
+        (function () {
+            'use strict'
+            
+            const forms = document.querySelectorAll('.needs-validation')
+            
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', async function(event) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                    
+                    // مسح الرسائل القديمة
+                    document.getElementById('messageContainer').innerHTML = '';
+                    
+                    // التحقق من صحة الحقول
+                    let isValid = true;
+                    const requiredFields = this.querySelectorAll('[required]');
+                    
+                    requiredFields.forEach(field => {
+                        if (!field.value.trim()) {
+                            isValid = false;
+                            field.classList.add('is-invalid');
+                        } else {
+                            field.classList.remove('is-invalid');
+                        }
+                    });
+                    
+                    // التحقق من أنواع البيانات
+                    if (!/^[a-zA-Z\u0600-\u06FF\s]+$/.test(document.getElementById('id_full_name').value)) {
+                        showMessage('error', 'الاسم الكامل يجب أن يحتوي على أحرف فقط');
+                        document.getElementById('id_full_name').classList.add('is-invalid');
+                        isValid = false;
+                    }
+                    
+                    if (!/^[a-zA-Z\u0600-\u06FF\s]+$/.test(document.getElementById('id_rank').value)) {
+                        showMessage('error', 'الرتبة يجب أن تحتوي على أحرف فقط');
+                        document.getElementById('id_rank').classList.add('is-invalid');
+                        isValid = false;
+                    }
+                    
+                    if (!/^\d+$/.test(document.getElementById('id_officer_number').value)) {
+                        showMessage('error', 'الرقم الوظيفي يجب أن يحتوي على أرقام فقط');
+                        document.getElementById('id_officer_number').classList.add('is-invalid');
+                        isValid = false;
+                    }
+                    
+                    if (!/^\d+$/.test(document.getElementById('id_id_number').value)) {
+                        showMessage('error', 'رقم الهوية يجب أن يحتوي على أرقام فقط');
+                        document.getElementById('id_id_number').classList.add('is-invalid');
+                        isValid = false;
+                    }
+                    
+                    if (isValid) {
+                        this.submit();
+                    } else {
+                        showMessage('error', 'يرجى تصحيح الأخطاء في النموذج');
+                    }
+                    
+                    this.classList.add('was-validated')
+                }, false)
+            })
+        })()
+        
+        // إظهار/إخفاء كلمة المرور
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const passwordInput = document.getElementById('id_password');
+            const icon = this;
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+        
+        // عرض الرسائل
+        function showMessage(type, text) {
+            const container = document.getElementById('messageContainer');
+            const message = document.createElement('div');
+            message.className = `alert alert-${type} mt-3 animate__animated animate__fadeIn`;
+            
+            let iconClass;
+            switch(type) {
+                case 'success':
+                    iconClass = 'fa-check-circle';
+                    break;
+                case 'error':
+                    iconClass = 'fa-exclamation-circle';
+                    break;
+                case 'warning':
+                    iconClass = 'fa-exclamation-triangle';
+                    break;
+                default:
+                    iconClass = 'fa-info-circle';
+            }
+            
+            message.innerHTML = `
+                <i class="fas ${iconClass}"></i> ${text}
+            `;
+            container.appendChild(message);
+            
+            // إزالة الرسالة بعد 5 ثواني
+            setTimeout(() => {
+                message.classList.add('animate__fadeOut');
+                setTimeout(() => message.remove(), 500);
+            }, 5000);
+        }
+        
+        // التنقل بين الحقول باستخدام Enter
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('editOfficerForm');
+            const inputs = Array.from(form.querySelectorAll('input, select'));
+            
+            inputs.forEach((input, index) => {
+                input.addEventListener('keydown', function (event) {
+                    if (event.key === 'Enter') {
+                        event.preventDefault();
+                        const nextIndex = index + 1;
+                        if (nextIndex < inputs.length) {
+                            inputs[nextIndex].focus();
+                        } else {
+                            form.dispatchEvent(new Event('submit'));
+                        }
+                    }
+                });
+                
+                // تأثيرات عند التركيز على الحقول
+                input.addEventListener('focus', function() {
+                    this.parentElement.classList.add('animate__animated', 'animate__pulse');
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.parentElement.classList.remove('animate__animated', 'animate__pulse');
+                });
+            });
+            
+            // التحقق من البيانات عند فقدان التركيز
+            document.getElementById('id_full_name').addEventListener('blur', function() {
+                if (!/^[a-zA-Z\u0600-\u06FF\s]+$/.test(this.value)) {
+                    showMessage('error', 'الاسم الكامل يجب أن يحتوي على أحرف فقط');
+                    this.classList.add('is-invalid');
+                } else {
+                    this.classList.remove('is-invalid');
+                }
+            });
+            
+            document.getElementById('id_rank').addEventListener('blur', function() {
+                if (!/^[a-zA-Z\u0600-\u06FF\s]+$/.test(this.value)) {
+                    showMessage('error', 'الرتبة يجب أن تحتوي على أحرف فقط');
+                    this.classList.add('is-invalid');
+                } else {
+                    this.classList.remove('is-invalid');
+                }
+            });
+            
+            document.getElementById('id_officer_number').addEventListener('blur', function() {
+                if (!/^\d+$/.test(this.value)) {
+                    showMessage('error', 'الرقم الوظيفي يجب أن يحتوي على أرقام فقط');
+                    this.classList.add('is-invalid');
+                } else {
+                    this.classList.remove('is-invalid');
+                }
+            });
+            
+            document.getElementById('id_id_number').addEventListener('blur', function() {
+                if (!/^\d+$/.test(this.value)) {
+                    showMessage('error', 'رقم الهوية يجب أن يحتوي على أرقام فقط');
+                    this.classList.add('is-invalid');
+                } else {
+                    this.classList.remove('is-invalid');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
