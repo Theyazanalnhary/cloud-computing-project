@@ -218,3 +218,13 @@ SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
 SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
     'fields': 'id,name,email',
 }
+
+
+# settings.py
+
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:8000', 
+    'https://localhost:8000'
+]
+
+ALLOWED_HOSTS = ['*']  # مؤقت فقط للتجربة (غيرها لاحقًا إلى اسم الموقع الحقيقي)
