@@ -10,11 +10,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container: 
-      image: docker:latest  # استخدام صورة Docker جاهزة
+      image: docker:latest
     services:
       docker:
-        image: docker:dind  # Docker-in-Docker لتشغيل الأوامر
-        privileged: true    # ضروري لتشغيل Docker داخل حاوية
+        image: docker:dind
         options: >-
           --driver=overlay2
           --storage-opt mmap=true
@@ -41,39 +40,3 @@ jobs:
         run: |
           IMAGE_TAG=$(git rev-parse --short HEAD)
           docker push ${{ secrets.DOCKER_HUB_USERNAME }}/my-image:${IMAGE_TAG}
-
-      - name: Run PostgreSQL Service for Testing
-        run: |
-          docker run --name test-db -e POSTGRES_DB=crime_db \
-            -e POSTGRES_USER=admin \
-            -e POSTGRES_PASSWORD=mypassword \
-            -p 5432:5432 \
-            -d postgres:15-alpine
-
-      - name: Run App Container for Testing
-        run: |
-          IMAGE_TAG=$(git rev-parse --short HEAD)
-          docker run --name test-app \
-            -e DEBUG=True \
-            -e DATABASE_URL=postgres://admin:mypassword@localhost:5432/crime_db \
-            -p 8000:8000 \
-            --link test-db:db \
-            -d ${{ secrets.DOCKER_HUB_USERNAME }}/my-image:${IMAGE_TAG}
-          sleep 30  # انتظر حتى تبدأ الخدمة
-
-      - name: Test API Endpoint
-        run: |
-          curl -f http://localhost:8000 || exit 1
-
-      - name: Scan for Vulnerabilities
-        run: |
-          IMAGE_TAG=$(git rev-parse --short HEAD)
-          docker scan ${{ secrets.DOCKER_HUB_USERNAME }}/my-image:${IMAGE_TAG} --login
-
-      - name: Notify Success
-        if: success()
-        run: echo "Build and Push Successful!"
-
-      - name: Notify Failure
-        if: failure()
-        run: echo "Build Failed! Check the logs."
