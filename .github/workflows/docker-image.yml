@@ -9,14 +9,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: 
-      image: docker:latest
-    services:
-      docker:
-        image: docker:dind
-        options: >-
-          --driver=overlay2
-          --storage-opt mmap=true
 
     steps:
       - name: Checkout Code
