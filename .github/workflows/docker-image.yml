@@ -29,11 +29,10 @@ jobs:
       - name: Build Docker Image
         run: |
           IMAGE_TAG=$(git rev-parse --short HEAD)
-          # تأكد من وجود Dockerfile
           if [ -f "Dockerfile" ]; then
             docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/my-image:${IMAGE_TAG} .
           else
-            echo "❌ Dockerfile not found in current directory!"
+            echo "❌ Dockerfile غير موجود في المجلد الحالي!"
             exit 1
           fi
 
