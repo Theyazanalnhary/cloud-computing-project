@@ -1,0 +1,51 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: List files in the workspace
+        run: ls -la
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+      - name: Build Docker Image if Dockerfile exists
+        run: |
+          IMAGE_TAG=$(git rev-parse --short HEAD)
+          if [ -f "./Dockerfile" ]; then
+            echo "✅ تم العثور على Dockerfile، جاري بناء الصورة..."
+            docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/my-image:${IMAGE_TAG} .
+          else
+            echo "⚠️ لم يتم العثور على Dockerfile، سيتم تخطي بناء الصورة."
+          fi
+
+      - name: Push Docker Image if it exists
+        run: |
+          IMAGE_TAG=$(git rev-parse --short HEAD)
+          IMAGE_NAME=${{ secrets.DOCKER_HUB_USERNAME }}/my-image:${IMAGE_TAG}
+          if docker image inspect $IMAGE_NAME > /dev/null 2>&1; then
+            echo "✅ جاري رفع الصورة إلى Docker Hub..."
+            docker push $IMAGE_NAME
+          else
+            echo "⚠️ لم يتم العثور على صورة Docker لرفعها."
+          fi
+
+      - name: Log out from Docker Hub
+        run: docker logout
