@@ -1,21 +1,21 @@
 # استخدام صورة Python خفيفة
 FROM python:3.11-slim
 
-# تحديد دليل العمل
+# تعيين دليل العمل داخل الحاوية
 WORKDIR /app
 
-# نسخ ملف المتطلبات وتثبيته (منفصل عن الكود للحصول على كشط أفضل)
+# نسخ ملف المتطلبات وتثبيت المكتبات
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# نسخ باقي الكود (تأكد من وجود الملفات)
+# نسخ باقي ملفات المشروع
 COPY . .
 
-# التأكد من وجود الملفات المطلوبة
-RUN if [ ! -f "web_system_crimnn/web_system_crimnn/wsgi.py" ]; then \
-      echo "❌ ملف wsgi.py غير موجود في المسار الصحيح!"; \
-      exit 1; \
-    fi
+# التأكد من أن ملف wsgi.py موجود
+RUN test -f web_system_crimnn/web_system_crimnn/wsgi.py || (echo "❌ ملف wsgi.py غير موجود!" && exit 1)
 
-# تشغيل الخدمة باستخدام Gunicorn
+# فتح المنفذ 8000
+EXPOSE 8000
+
+# تشغيل Gunicorn
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "web_system_crimnn.wsgi:application"]
