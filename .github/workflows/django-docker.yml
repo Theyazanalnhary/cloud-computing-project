@@ -44,8 +44,9 @@ jobs:
             -p 8000:8000 \
             django-app
 
+      # Download wait-for-it.sh (حل 1) أو استخدام dockerize (حل 2)
       - name: Download wait-for-it
-        run: wget https://github.com/vishnubob/wait-for-it/releases/download/v2.5.0/wait-for-it.sh
+        run: wget https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh
 
       - name: Wait for Django to be ready
         run: |
