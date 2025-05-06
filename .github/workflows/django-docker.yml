@@ -1,0 +1,51 @@
+name: Django CI with Docker
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build-and-run:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_DB: crime_db
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: mypassword
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        run: |
+          docker build -t django-app ./Theyazan/Labs/lab_02/web_system_crimnn
+
+      - name: Run Django container
+        run: |
+          docker run -d --name django-app \
+            -e DEBUG=True \
+            -e DATABASE_URL=postgres://admin:mypassword@localhost:5432/crime_db \
+            -p 8000:10000 \
+            django-app
+
+      - name: Wait for Django to be ready
+        run: sleep 10
+
+      - name: Test Django is running
+        run: curl http://localhost:8000 || exit 1
