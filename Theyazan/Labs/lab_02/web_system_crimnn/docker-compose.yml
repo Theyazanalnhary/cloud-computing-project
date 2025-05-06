@@ -1,9 +1,15 @@
+# docker-compose.yml
+
+version: "3.9"
+
 services:
   web:
-    build: .
+    build:
+      context: ./Theyazan/Labs/lab_02/web_system_crimnn
+      dockerfile: Dockerfile
     command: gunicorn web_system_crimnn.wsgi:application --bind 0.0.0.0:8000
     volumes:
-      - .:/app
+      - ./Theyazan/Labs/lab_02/web_system_crimnn:/app
     ports:
       - "8000:8000"
     environment:
