@@ -40,12 +40,20 @@ jobs:
         run: |
           docker run -d --name django-app \
             -e DEBUG=True \
-            -e DATABASE_URL=postgres://admin:mypassword@localhost:5432/crime_db \
-            -p 8000:10000 \
+            -e DATABASE_URL=postgres://admin:mypassword@postgres:5432/crime_db \
+            -p 8000:8000 \
             django-app
 
+      - name: Download wait-for-it
+        run: wget https://github.com/vishnubob/wait-for-it/releases/download/v2.5.0/wait-for-it.sh
+
       - name: Wait for Django to be ready
-        run: sleep 10
+        run: |
+          chmod +x wait-for-it.sh
+          ./wait-for-it.sh localhost:8000 --timeout=60 --strict -- echo "Django is up"
 
       - name: Test Django is running
         run: curl http://localhost:8000 || exit 1
+
+      - name: Check Django container logs
+        run: docker logs django-app
